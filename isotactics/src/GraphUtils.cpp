@@ -3,13 +3,16 @@
 
 
 using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
-                                    VerticeProps, EdgeProps>;
+                                    VerticeProps, EdgeProps, GraphProps>;
 
 using vDesc = Graph::vertex_descriptor;
 using eDesc = Graph::edge_descriptor;
 
 using vIter = Graph::vertex_iterator;
 using vIterPair = std::pair<vIter, vIter>;
+
+using eIter = Graph::edge_iterator;
+using eIterPair = std::pair<eIter, eIter>;
 
 using oeIter = Graph::out_edge_iterator;
 using oeIterPair = std::pair<oeIter, oeIter>;
@@ -33,6 +36,36 @@ Graph parseGraph(const std::string &path)
   boost::read_graphviz(m, g, dp);
 
   return g;
+}
+
+
+void addAlignment(Graph &g, const alignment &al)
+{
+  g[boost::graph_bundle].al = al;;
+}
+
+void addAlignmentHalf(Graph &g, const alignmentHalf &alh)
+{
+  g[boost::graph_bundle].alh = alh;
+}
+
+alignmentHalf getAlignmentHalf(const Graph &g)
+{
+  return g[boost::graph_bundle].alh;
+}
+
+
+
+
+
+
+void printAllEdges(const Graph &g)
+{
+  const Range<eIter> edges = makeRange(boost::edges(g));
+
+  for (const eDesc &e : edges)
+    std::cout << g[e].label << std::endl;
+
 }
 
 void printOutEdge(const Graph &g, const eDesc &e)
@@ -62,4 +95,6 @@ void printGraph(const Graph &g)
 
   for (const vDesc &v : vertices)
     printOutEdges(g, v);
+
+  printAlignGrouping(g[boost::graph_bundle].alh);
 }

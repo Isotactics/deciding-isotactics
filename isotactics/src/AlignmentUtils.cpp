@@ -68,11 +68,11 @@ bool groupContainsLabel(const label &l, const alignmentGroup &g)
   return true;
 }
 
-alignmentGrouping getLabelGrouping(const label &l, const alignmentGrouping &gp)
+alignmentGrouping getLabelGrouping(const label &l, const alignmentHalf &alh)
 {
   alignmentGrouping res;
 
-  for (const alignmentGroup &g : gp) {
+  for (const alignmentGroup &g : alh) {
     if (groupContainsLabel(l, g))
       res.push_back(g);
   }
@@ -108,18 +108,27 @@ alignmentGrouping getAlignmentRhs(const alignment &al)
 
 void printAlignGroup(const alignmentGroup &g)
 {
-  for (const label &l : g)
-    std::cout << l << " ";
+  alignmentGroup::const_iterator it;
+
+  for (it = g.begin(); it != (g.end() - 1); ++it)
+    std::cout << *it << ", ";
+
+  std::cout << *it;
+
 
   return;
 }
 
 void printAlignGrouping(const alignmentGrouping &gp)
 {
-  for (const alignmentGroup &g : gp) {
-    printAlignGroup(g);
-    std::cout << std::endl;
+  alignmentGrouping::const_iterator it;
+
+  for (it = gp.begin(); it != (gp.end() - 1); ++it) {
+    printAlignGroup(*it);
+    std::cout << " | ";
   }
+
+  printAlignGroup(*it);
 
   return;
 }
