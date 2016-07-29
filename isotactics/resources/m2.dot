@@ -1,4 +1,5 @@
 digraph {
+  ""  -> I    [label="", lowlink="0"];
   I   -> II   [label="s", lowlink="0"];
   I   -> III  [label="t", lowlink="0"];
   II  -> I    [label="u", lowlink="0"];

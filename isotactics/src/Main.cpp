@@ -1,96 +1,68 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
-
 #include <map>
 #include <unordered_map>
-
 #include <vector>
 
-#include "GraphUtils.h"
-#include "AlignmentUtils.h"
+#include "AlignmentUtils.hpp"
+#include "GraphUtils.hpp"
+#include "Utils.hpp"
 
 
 
-void printNewLine()
+void test(Graph_t g)
 {
-  std::cout << std::endl;
-}
-
-
-
-
-using labelGroupingMap = std::unordered_map<label, alignmentGrouping>;
-
-
-labelGroupingMap createLabelGroupingMap(Graph &g)
-{
-  labelGroupingMap lgm;
-
-  const Range<eIter> edges = makeRange(boost::edges(g));
-  alignmentHalf alh = getAlignmentHalf(g);
-
-  label l;
-  alignmentGrouping gp;
+  const Range<eIter> edges = Util::makeRange(boost::edges(g));
 
   for (const eDesc &e : edges) {
-    l = g[e].label;
-    gp = getLabelGrouping(l, alh);
+    std::cout << g[e].label  << std::endl;
 
-    lgm[l] = gp;
   }
-
-  return lgm;
 }
 
 
-void printLabelGroupingMap(const labelGroupingMap &lgm)
-{
-  for (const std::pair<label, alignmentGrouping> p : lgm) {
-    std::cout << p.first << " ->  ";
 
-    printAlignGrouping(p.second);
-    printNewLine();
-  }
+/*
+TODO:
+  - startzustand parsen/speichern
+  - endzustänge (plural!) parsen/speichern
 
-  return;
-}
-
+  - witness graph algo
+*/
 
 
 
 int main()
 {
 
-  Graph g1 = parseGraph("resources/m1.dot");
-  Graph g2 = parseGraph("resources/m2.dot");
+  Graph_t g1 = Graph::parse("resources/m1.dot");
+  Graph_t g2 = Graph::parse("resources/m2.dot");
 
-  alignment al = parseAlignment("resources/alignment.json");
+  alignment alm = Alm::parse("resources/alignment.json");
 
-  addAlignment(g1, al);
-  addAlignment(g2, al);
+  Graph::addAlm(g1, alm);
+  Graph::addAlm(g2, alm);
 
-  alignmentGrouping lhs = getAlignmentLhs(al);
-  alignmentGrouping rhs = getAlignmentRhs(al);
-
-  addAlignmentHalf(g1, lhs);
-  addAlignmentHalf(g2, rhs);
-
-  printGraph(g1);
-  printNewLine();
-  printNewLine();
-
-  printGraph(g2);
-  printNewLine();
-  printNewLine();
+  Graph::addAlmHalf(g1, Alm::getLhs(alm));
+  Graph::addAlmHalf(g2, Alm::getRhs(alm));
 
 
-  labelGroupingMap lgm1 = createLabelGroupingMap(g1);
-  labelGroupingMap lgm2 = createLabelGroupingMap(g2);
+  labelGroupingMap lgm1 = Graph::getLabelGroupingMap(g1);
+  labelGroupingMap lgm2 = Graph::getLabelGroupingMap(g2);
 
-  printLabelGroupingMap(lgm1);
-  printNewLine();
-  printLabelGroupingMap(lgm2);
+
+  labelAlmSubMap lsm1 = Graph::getLabelAlmSubMap(g1);
+  //Graph::printLsm(lsm1);
+
+  labelAlmSubMap lsm2 = Graph::getLabelAlmSubMap(g2);
+//  Graph::printLsm(lsm2);
+
+
+  //std::cout << g1[(g1[boost::graph_bundle].start)].name << std::endl;
+
+
+  test(g1);
 
 
 
@@ -98,23 +70,6 @@ int main()
 
 
 
-/*
-  printGraph(g1);
-  printNewLine();
-
-  printGraph(g2);
-  printNewLine();
-
-
-  alignment al = parseAlignment("resources/alignment.json");
-
-  alignmentGrouping lhs = getAlignmentLhs(al);
-  alignmentGrouping rhs = getAlignmentRhs(al);
-
-  alignmentGrouping l_s = getLabelGrouping("s", rhs);
-
-  printAlignGrouping(l_s);
-*/
 
 
   return 0;

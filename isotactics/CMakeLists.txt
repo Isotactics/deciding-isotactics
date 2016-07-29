@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(Test)
+project(Isotactics)
 
 set (CMAKE_BINARY_DIR ../bin)
-set (CMAKE_CXX_FLAGS "-std=c++11 -Wall")
+set (CMAKE_CXX_FLAGS "-std=c++14 -Wall")
+
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 set(Boost_USE_STATIC_LIBS OFF)
