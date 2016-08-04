@@ -2,6 +2,8 @@
 #include <fstream>
 #include <iostream>
 
+#include <boost/algorithm/string/join.hpp>
+
 #include "AlignmentUtils.hpp"
 #include "Utils.hpp"
 
@@ -107,6 +109,25 @@ almMap Alm::getAlmMap(const alignment &alm)
     m[p.first] = p.second;
 
   return m;
+}
+
+std::string Alm::groupToStr(const alignmentGroup &g)
+{
+  std::string res = boost::algorithm::join(g, ",");
+
+  return res;
+}
+
+std::string Alm::groupingToStr(const alignmentGrouping &gp)
+{
+  std::vector<std::string> tmp;
+
+  for (const alignmentGroup &g : gp)
+    tmp.push_back(groupToStr(g));
+
+  std::string res = boost::algorithm::join(tmp, " | ");
+
+  return res;
 }
 
 void Alm::print(const alignment &alm)

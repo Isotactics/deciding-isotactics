@@ -13,14 +13,9 @@
 #include "Utils.hpp"
 
 
-using startV   = boost::adjacency_list<>::vertex_descriptor;
-using endVList = std::vector<boost::adjacency_list<>::vertex_descriptor>;
-
-
 struct VerticeProps {
   std::string name;
-  bool isStart  = false;
-  bool isFinish = false;
+  std::string role;
 };
 
 struct EdgeProps {
@@ -30,8 +25,6 @@ struct EdgeProps {
 
 struct GraphProps {
   std::string name;
-  startV start;
-  endVList ends;
 
   alignment alm;
   alignmentGrouping alh;
@@ -40,26 +33,25 @@ struct GraphProps {
 using Graph_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
                                     VerticeProps, EdgeProps, GraphProps>;
 
-using vDesc = Graph_t::vertex_descriptor;
-using eDesc = Graph_t::edge_descriptor;
-
-using vIter = Graph_t::vertex_iterator;
-using vIterPair = std::pair<vIter, vIter>;
-
-using eIter = Graph_t::edge_iterator;
-using eIterPair = std::pair<eIter, eIter>;
-
-using oeIter = Graph_t::out_edge_iterator;
-using oeIterPair = std::pair<oeIter, oeIter>;
-
 using labelGroupingMap = std::unordered_map<label, alignmentGrouping>;
 using labelAlmSubMap = std::unordered_map<label, alignmentSub>;
 
 
 namespace Graph {
-  Graph_t parse(const std::string &path);
+  using vDesc = Graph_t::vertex_descriptor;
+  using eDesc = Graph_t::edge_descriptor;
 
-  void setStartVertex(Graph_t &g);
+  using vIter = Graph_t::vertex_iterator;
+  using vIterPair = std::pair<vIter, vIter>;
+
+  using eIter = Graph_t::edge_iterator;
+  using eIterPair = std::pair<eIter, eIter>;
+
+  using oeIter = Graph_t::out_edge_iterator;
+  using oeIterPair = std::pair<oeIter, oeIter>;
+
+
+  Graph_t parse(const std::string &path);
 
   void addAlm(Graph_t &g, const alignment &al);
   void addAlmHalf(Graph_t &g, const alignmentGrouping &gp);
@@ -69,6 +61,18 @@ namespace Graph {
   labelGroupingMap getLabelGroupingMap(const Graph_t &g);
   labelAlmSubMap getLabelAlmSubMap(const Graph_t &g);
 
+  Graph::vDesc getStart(const Graph_t &g);
+  std::vector<Graph::vDesc> getEnds(const Graph_t &g);
+
+  Range<Graph::oeIter> getOutEdges(const Graph_t &g, const Graph::vDesc &v);
+
+  Graph::vDesc getVertex(const std::string &vName, const Graph_t &g);
+
+
+
+
+
+
   void print(const Graph_t &g);
 
   void printAlm(const Graph_t &g);
@@ -77,8 +81,8 @@ namespace Graph {
   void printVertices(const Graph_t &g);
   void printEdges(const Graph_t &g);
 
-  void printOutEdge(const Graph_t &g, const eDesc &e);
-  void printOutEdges(const Graph_t &g, const vDesc &vd);
+  void printOutEdge(const Graph_t &g, const Graph::eDesc &e);
+  void printOutEdges(const Graph_t &g, const Graph::vDesc &vd);
 
   void printLgm(const labelGroupingMap &lgm);
   void printLsm(const labelAlmSubMap &lsm);

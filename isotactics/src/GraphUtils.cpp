@@ -11,6 +11,7 @@ Graph_t Graph::parse(const std::string &path)
   boost::dynamic_properties dp(boost::ignore_other_properties);
 
   dp.property("node_id", boost::get(&VerticeProps::name, g));
+  dp.property("role", boost::get(&VerticeProps::role, g));
 
   dp.property("label", boost::get(&EdgeProps::label, g));
   dp.property("lowlink", boost::get(&EdgeProps::lowlink, g));
@@ -18,23 +19,9 @@ Graph_t Graph::parse(const std::string &path)
   std::ifstream m(path);
   boost::read_graphviz(m, g, dp);
 
-  Graph::setStartVertex(g);
-
   return g;
 }
 
-void Graph::setStartVertex(Graph_t &g)
-{
-  const Range<eIter> edges = Util::makeRange(boost::edges(g));
-
-  for (const eDesc &e : edges) {
-    if (g[e].label == "")
-      g[boost::graph_bundle].start = boost::target(e, g);
-
-  }
-
-  return;
-}
 
 void Graph::addAlm(Graph_t &g, const alignment &alm)
 {
@@ -60,13 +47,13 @@ labelGroupingMap Graph::getLabelGroupingMap(const Graph_t &g)
 {
   labelGroupingMap lgm;
 
-  const Range<eIter> edges = Util::makeRange(boost::edges(g));
+  const Range<Graph::eIter> edges = Util::makeRange(boost::edges(g));
   alignmentHalf alh = Graph::getAlmHalf(g);
 
   label l;
   alignmentGrouping gp;
 
-  for (const eDesc &e : edges) {
+  for (const Graph::eDesc &e : edges) {
     l = g[e].label;
     gp = Alm::getGrouping(l, alh);
 
@@ -80,13 +67,13 @@ labelAlmSubMap Graph::getLabelAlmSubMap(const Graph_t &g)
 {
   labelAlmSubMap lsm;
 
-  const Range<eIter> edges = Util::makeRange(boost::edges(g));
+  const Range<Graph::eIter> edges = Util::makeRange(boost::edges(g));
   alignment alm = Graph::getAlm(g);
 
   label l;
   alignmentSub almSub;
 
-  for (const eDesc &e : edges) {
+  for (const Graph::eDesc &e : edges) {
     l = g[e].label;
 
     for (const alignmentPair &p : alm) {
@@ -104,11 +91,58 @@ labelAlmSubMap Graph::getLabelAlmSubMap(const Graph_t &g)
 
 }
 
+Graph::vDesc Graph::getStart(const Graph_t &g)
+{
+  vDesc start;
+  const Range<Graph::vIter> vertices = Util::makeRange(boost::vertices(g));
+
+  for (const Graph::vDesc &v : vertices) {
+    if (g[v].role == "start")
+      start = v;
+  }
+
+  return start;
+}
+
+std::vector<Graph::vDesc> Graph::getEnds(const Graph_t &g)
+{
+  std::vector<Graph::vDesc> res;
+
+  const Range<Graph::vIter> vertices = Util::makeRange(boost::vertices(g));
+
+  for (const Graph::vDesc &v : vertices) {
+    if (g[v].role == "end")
+      res.push_back(v);
+  }
+
+  return res;
+}
+
+Range<Graph::oeIter> Graph::getOutEdges(const Graph_t &g, const Graph::vDesc &v)
+{
+  return Util::makeRange(boost::out_edges(v, g));
+}
+
+Graph::vDesc Graph::getVertex(const std::string &vName, const Graph_t &g)
+{
+  vDesc res;
+  const Range<Graph::vIter> vertices = Util::makeRange(boost::vertices(g));
+
+  for (const Graph::vDesc &v : vertices) {
+    if (g[v].name == vName)
+      res = v;
+  }
+
+  return res;
+}
+
+
+
 void Graph::print(const Graph_t &g)
 {
-  Range<vIter> vertices = Util::makeRange(boost::vertices(g));
+  Range<Graph::vIter> vertices = Util::makeRange(boost::vertices(g));
 
-  for (const vDesc &v : vertices)
+  for (const Graph::vDesc &v : vertices)
     Graph::printOutEdges(g, v);
 
   return;
@@ -126,9 +160,9 @@ void Graph::printAlmHalf(const Graph_t &g)
 
 void Graph::printVertices(const Graph_t &g)
 {
-  const Range<vIter> vertices = Util::makeRange(boost::vertices(g));
+  const Range<Graph::vIter> vertices = Util::makeRange(boost::vertices(g));
 
-  for (const vDesc &v : vertices)
+  for (const Graph::vDesc &v : vertices)
     std::cout << g[v].name << std::endl;
 
   return;
@@ -136,9 +170,9 @@ void Graph::printVertices(const Graph_t &g)
 
 void Graph::printEdges(const Graph_t &g)
 {
-  const Range<eIter> edges = Util::makeRange(boost::edges(g));
+  const Range<Graph::eIter> edges = Util::makeRange(boost::edges(g));
 
-  for (const eDesc &e : edges)
+  for (const Graph::eDesc &e : edges)
     std::cout << g[e].label << std::endl;
 
   return;
@@ -146,8 +180,8 @@ void Graph::printEdges(const Graph_t &g)
 
 void Graph::printOutEdge(const Graph_t &g, const eDesc &e)
 {
-  const vDesc src = boost::source(e, g);
-  const vDesc dst = boost::target(e, g);
+  const Graph::vDesc src = boost::source(e, g);
+  const Graph::vDesc dst = boost::target(e, g);
 
   std::cout << g[src].name << " -> " << g[dst].name;
   std::cout << " [label=\"" << g[e].label << "\"]" << std::endl;
@@ -155,12 +189,12 @@ void Graph::printOutEdge(const Graph_t &g, const eDesc &e)
 
 void Graph::printOutEdges(const Graph_t &g, const vDesc &vd) {
 
-  const Range<oeIter> outEdges = Util::makeRange(boost::out_edges(vd, g));
+  const Range<Graph::oeIter> outEdges = Util::makeRange(boost::out_edges(vd, g));
 
   if (outEdges.empty())
     return;
 
-  for (const eDesc &e : outEdges)
+  for (const Graph::eDesc &e : outEdges)
     Graph::printOutEdge(g, e);
 
   return;

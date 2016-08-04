@@ -1,5 +1,7 @@
 digraph {
-  ""  -> 1  [label="", lowlink="0", start="1"];
+  1 [role="start"]
+  3 [role="end"]
+
   1   -> 1  [label="a", lowlink="0"];
   1   -> 2  [label="b", lowlink="0"];
   1   -> 3  [label="d", lowlink="0"];

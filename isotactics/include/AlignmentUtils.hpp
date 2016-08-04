@@ -18,7 +18,7 @@ using alignmentGrouping = std::vector<alignmentGroup>;
 using alignmentPair     = std::pair<alignmentGroup, alignmentGroup>;
 using alignmentHalf     = alignmentGrouping;
 using alignment         = std::vector<alignmentPair>;
-using alignmentSub      = std::vector<alignmentPair>;
+using alignmentSub      = alignment;
 
 using almMap = std::map<alignmentGroup, alignmentGroup>;
 
@@ -37,6 +37,10 @@ namespace Alm {
   alignmentGrouping getGrouping(const label &l, const alignmentHalf &alh);
 
   bool hasPair(const alignment &alm, const alignmentPair &p);
+
+
+  std::string groupToStr(const alignmentGroup &g);
+  std::string groupingToStr(const alignmentGrouping &gp);
 
   void print(const alignment &a);
   void printPair(const alignmentPair &p);
