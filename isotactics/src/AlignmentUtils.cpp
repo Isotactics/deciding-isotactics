@@ -27,6 +27,16 @@ alignment Alm::parse(const std::string &path)
   return al;
 }
 
+alignmentGroup Alm::getGroup(json::array_t a)
+{
+  alignmentGroup g;
+
+  for (const label &l : a)
+    g.push_back(l);
+
+  return g;
+}
+
 alignmentPair Alm::getPair(json::object_t o)
 {
   alignmentPair p;
@@ -36,14 +46,80 @@ alignmentPair Alm::getPair(json::object_t o)
   return p;
 }
 
-alignmentGroup Alm::getGroup(json::array_t a)
+alignmentGrouping Alm::Lhs(const alignment &alm)
 {
-  alignmentGroup g;
+  alignmentGrouping gp;
 
-  for (const label &l : a)
-    g.push_back(l);
+  for (const alignmentPair &p : alm)
+    gp.push_back(p.first);
 
-  return g;
+  return gp;
+}
+
+alignmentGrouping Alm::Rhs(const alignment &alm)
+{
+  alignmentGrouping gp;
+
+  for (const alignmentPair &p : alm)
+    gp.push_back(p.second);
+
+  return gp;
+}
+
+almMap Alm::AlmMap(const alignment &alm)
+{
+  almMap m;
+
+  for (const alignmentPair &p : alm)
+    m[p.first] = p.second;
+
+  return m;
+}
+
+labelGroupingMap Alm::LabelGroupingMap(const Graph_t &g, const alignmentHalf &alh)
+{
+  labelGroupingMap lgm;
+
+  const Range<Graph::eIter> edges = Util::makeRange(boost::edges(g));
+
+  label l;
+  alignmentGrouping gp;
+
+  for (const Graph::eDesc &e : edges) {
+    l = g[e].label;
+    gp = Alm::getGrouping(l, alh);
+
+    lgm[l] = gp;
+  }
+
+  return lgm;
+}
+
+labelAlmSubMap Alm::LabelAlmSubMap(const Graph_t &g, const alignment &alm)
+{
+  labelAlmSubMap lsm;
+
+  const Range<Graph::eIter> edges = Util::makeRange(boost::edges(g));
+
+  label l;
+  alignmentSub almSub;
+
+  for (const Graph::eDesc &e : edges) {
+    l = g[e].label;
+
+    for (const alignmentPair &p : alm) {
+
+      if ((Alm::hasLabel(p.first, l)) || (Alm::hasLabel(p.second, l)))
+        almSub.push_back(p);
+
+    }
+
+    lsm[l] = almSub;
+    almSub.clear();
+  }
+
+  return lsm;
+
 }
 
 bool Alm::hasLabel(const alignmentGroup &g, const label &l)
@@ -58,19 +134,6 @@ bool Alm::hasLabel(const alignmentGroup &g, const label &l)
   return true;
 }
 
-alignmentGrouping Alm::getGrouping(const label &l, const alignmentHalf &alh)
-{
-  alignmentGrouping res;
-
-  for (const alignmentGroup &g : alh) {
-    if (Alm::hasLabel(g, l))
-      res.push_back(g);
-  }
-
-  return res;
-}
-
-
 bool Alm::hasPair(const alignment &alm, const alignmentPair &p)
 {
   for (const alignmentPair &ap : alm) {
@@ -81,34 +144,16 @@ bool Alm::hasPair(const alignment &alm, const alignmentPair &p)
   return false;
 }
 
-alignmentGrouping Alm::getLhs(const alignment &alm)
+alignmentGrouping Alm::getGrouping(const label &l, const alignmentHalf &alh)
 {
-  alignmentGrouping gp;
+  alignmentGrouping res;
 
-  for (const alignmentPair &p : alm)
-    gp.push_back(p.first);
+  for (const alignmentGroup &g : alh) {
+    if (Alm::hasLabel(g, l))
+      res.push_back(g);
+  }
 
-  return gp;
-}
-
-alignmentGrouping Alm::getRhs(const alignment &alm)
-{
-  alignmentGrouping gp;
-
-  for (const alignmentPair &p : alm)
-    gp.push_back(p.second);
-
-  return gp;
-}
-
-almMap Alm::getAlmMap(const alignment &alm)
-{
-  almMap m;
-
-  for (const alignmentPair &p : alm)
-    m[p.first] = p.second;
-
-  return m;
+  return res;
 }
 
 std::string Alm::groupToStr(const alignmentGroup &g)
@@ -129,6 +174,19 @@ std::string Alm::groupingToStr(const alignmentGrouping &gp)
 
   return res;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void Alm::print(const alignment &alm)
 {
@@ -190,4 +248,24 @@ void Alm::printAlmMap(const almMap &m)
   return;
 }
 
+void Alm::printLgm(const labelGroupingMap &lgm)
+{
+  for (const std::pair<label, alignmentGrouping> &p : lgm) {
+    std::cout << p.first << " ->  ";
+    Alm::printGrouping(p.second);
+    Util::printLine();
+  }
 
+  return;
+}
+
+void Alm::printLsm(const labelAlmSubMap &lsm)
+{
+  for (const std::pair<label, alignmentSub> &p : lsm) {
+    std::cout << p.first << " -> " << std::endl;
+    Alm::print(p.second);
+    Util::printLine();
+  }
+
+  return;
+}

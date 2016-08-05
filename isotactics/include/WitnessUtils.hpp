@@ -8,11 +8,8 @@
 #include <boost/range/iterator_range.hpp>
 
 #include "AlignmentUtils.hpp"
+#include "MatchUtils.hpp"
 #include "Utils.hpp"
-
-
-using match             = alignmentPair;
-using matchSet          = alignment;
 
 
 struct wgVertexProps {
@@ -41,6 +38,15 @@ using WG_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
 using vName = std::string;
 
 namespace WG {
+  struct Vertex {
+    std::string name;
+    std::string v1Name;
+    std::string v2Name;
+    matchSet ms;
+
+    std::string role;
+  };
+
   using vDesc = WG_t::vertex_descriptor;
   using eDesc = WG_t::edge_descriptor;
 
@@ -54,25 +60,32 @@ namespace WG {
   using oeIterPair = std::pair<oeIter, oeIter>;
 
 
-  WG::vDesc addVertex(const vName &v1, const vName &v2, const matchSet &ms, WG_t &wg);
+  WG::Vertex createVertex(const vName &v1, const vName &v2, const matchSet &ms);
+
+  std::string getVertexName(const WG::Vertex &v);
+
+
+
+
+  WG::vDesc addVertex(const WG::Vertex &v, WG_t &wg);
+
+
   WG::eDesc addEdge(WG::vDesc &v1, const alignmentGrouping &gp1,
                     const alignmentGrouping &gp2, WG::vDesc &v2, WG_t &wg);
 
 
-  bool hasMatch(const matchSet &ms, const match &m);
-
-  bool matchEmpty(const match &m);
-  bool matchSetEmpty(const matchSet &ms);
-
-  match getMatch(const alignment &alm, const label &l1, const label &l2);
-  matchSet getMatchSet(const alignment &alm, const matchSet &ms, const label &l1, const label &l2);
 
 
-  std::string matchToStr(const match &m);
-  std::string matchSetToStr(const matchSet &m);
+  WG::vDesc getVertex(const WG::Vertex &v, const WG_t &wg);
 
-  void printMatch(const match &m);
-  void printMatchSet(const matchSet &ms);
+
+
+  bool hasVertex(const WG::Vertex &v, const WG_t &wg);
+  bool vertexEqual(const WG::Vertex &v1, const WG::Vertex &v2);
+
+
+
+
 
   void print(const WG_t &wg);
   void printOutEdges(const WG_t &wg, const WG::vDesc &v);

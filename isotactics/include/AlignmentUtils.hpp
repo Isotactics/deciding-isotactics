@@ -3,10 +3,12 @@
 
 #include <map>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "json.hpp"
+#include "GraphUtils.hpp"
 #include "Utils.hpp"
 
 using json = nlohmann::json;
@@ -22,22 +24,26 @@ using alignmentSub      = alignment;
 
 using almMap = std::map<alignmentGroup, alignmentGroup>;
 
+using labelGroupingMap = std::unordered_map<label, alignmentGrouping>;
+using labelAlmSubMap = std::unordered_map<label, alignmentSub>;
+
 namespace Alm {
   alignment parse(const std::string &path);
 
   alignmentGroup getGroup(json::array_t a);
   alignmentPair getPair(json::object_t o);
 
-  alignmentGrouping getLhs(const alignment &alm);
-  alignmentGrouping getRhs(const alignment &alm);
+  alignmentGrouping Lhs(const alignment &alm);
+  alignmentGrouping Rhs(const alignment &alm);
 
-  almMap getAlmMap(const alignment &alm);
+  almMap AlmMap(const alignment &alm);
+  labelGroupingMap LabelGroupingMap(const Graph_t &g, const alignmentHalf &alh);
+  labelAlmSubMap LabelAlmSubMap(const Graph_t &g, const alignment &alm);
 
   bool hasLabel(const alignmentGroup &g, const label &l);
-  alignmentGrouping getGrouping(const label &l, const alignmentHalf &alh);
-
   bool hasPair(const alignment &alm, const alignmentPair &p);
 
+  alignmentGrouping getGrouping(const label &l, const alignmentHalf &alh);
 
   std::string groupToStr(const alignmentGroup &g);
   std::string groupingToStr(const alignmentGrouping &gp);
@@ -48,6 +54,8 @@ namespace Alm {
   void printGroup(const alignmentGroup &g);
 
   void printAlmMap(const almMap &m);
+  void printLgm(const labelGroupingMap &lgm);
+  void printLsm(const labelAlmSubMap &lsm);
 }
 
 #endif // __ALIGNMENTUTILS_HPP__

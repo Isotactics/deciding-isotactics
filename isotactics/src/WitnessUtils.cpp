@@ -1,24 +1,43 @@
 #include <sstream>
-#include <boost/algorithm/string/join.hpp>
+#include <string>
 
 #include "WitnessUtils.hpp"
 
 
-WG::vDesc WG::addVertex(const vName &v1, const vName &v2, const matchSet &ms, WG_t &wg)
+
+WG::Vertex WG::createVertex(const vName &v1, const vName &v2, const matchSet &ms)
 {
-  WG::vDesc v = boost::add_vertex(wg);
+  WG::Vertex v;
 
-  std::string mStr = WG::matchSetToStr(ms);
+  v.v1Name = v1;
+  v.v2Name = v2;
+  v.ms     = ms;
 
-  std::stringstream name;
-  name << v1 << "," << v2 << "," << mStr;
-
-  wg[v].name   = name.str();
-  wg[v].v1Name = v1;
-  wg[v].v2Name = v2;
-  wg[v].ms     = ms;
+  v.name = WG::getVertexName(v);
 
   return v;
+}
+
+std::string WG::getVertexName(const WG::Vertex &v)
+{
+  std::stringstream name;
+
+  name << "" << v.v1Name << ", " << v.v2Name << ", ";
+  name << Match::setToString(v.ms) << "";
+
+  return name.str();
+}
+
+WG::vDesc WG::addVertex(const WG::Vertex &v, WG_t &wg)
+{
+  WG::vDesc nv = boost::add_vertex(wg);
+
+  wg[nv].name   = v.name;
+  wg[nv].v1Name = v.v1Name;
+  wg[nv].v2Name = v.v2Name;
+  wg[nv].ms     = v.ms;
+
+  return nv;
 }
 
 WG::eDesc WG::addEdge(WG::vDesc &v1, const alignmentGrouping &gp1,
@@ -36,114 +55,58 @@ WG::eDesc WG::addEdge(WG::vDesc &v1, const alignmentGrouping &gp1,
   return e;
 }
 
-bool WG::hasMatch(const matchSet &ms, const match &ma)
+
+WG::vDesc WG::getVertex(const WG::Vertex &v, const WG_t &wg)
 {
-  for (const match &m : ms) {
-    if (m == ma)
+  WG::vDesc nv;
+
+  Range<WG::vIter> vertices = Util::makeRange(boost::vertices(wg));
+
+  for (const WG::vDesc &wgv : vertices) {
+    if (wg[wgv].name == v.name)
+      nv = wgv;
+  }
+
+  return nv;
+}
+
+bool WG::hasVertex(const WG::Vertex &v, const WG_t &wg)
+{
+  Range<WG::vIter> vertices = Util::makeRange(boost::vertices(wg));
+
+  for (const WG::vDesc &wgv : vertices) {
+    if (wg[wgv].name == v.name)
       return true;
   }
 
   return false;
 }
 
-bool WG::matchEmpty(const match &m)
+bool WG::vertexEqual(const WG::Vertex &v1, const WG::Vertex &v2)
 {
-  return (m.first).empty();
+  if (v1.name == v2.name)
+    return true;
+
+  return false;
 }
 
-bool WG::matchSetEmpty(const matchSet &ms)
-{
-  return ms.empty();
-}
 
-match WG::getMatch(const alignment &alm, const label &l1, const label &l2)
-{
-  match m;
-  matchSet res;
 
-  for (const alignmentPair &p : alm) {
-    if ((Alm::hasLabel(p.first, l1)) && (Alm::hasLabel(p.second, l2)))
-      res.push_back(p);
-  }
 
-  if (res.empty())
-    return m;
 
-  return res[0];
-}
 
-matchSet WG::getMatchSet(const alignment &alm, const matchSet &ms,
-                                          const label &l1, const label &l2)
-{
-  matchSet res;
 
-  match m = WG::getMatch(alm, l1, l2);
 
-  if (WG::matchEmpty(m))
-    return res;
 
-  if (!WG::hasMatch(ms, m))
-    res.push_back(m);
 
-  return res;
-}
 
-std::string WG::matchToStr(const match &m)
-{
-  std::stringstream res;
 
-  res << "(";
-  res << boost::algorithm::join(m.first, ",");
-  res << " <> ";
-  res << boost::algorithm::join(m.second, ",");
-  res << ")";
 
-  return res.str();
-}
 
-std::string WG::matchSetToStr(const matchSet &ms)
-{
-  std::stringstream res;
-  matchSet::const_iterator it;
 
-  if (ms.empty()) {
-    res << "{}";
-    return res.str();
-  }
 
-  res << "{";
 
-  for (it = ms.begin(); it != ms.end() - 1; ++it) {
-    res << WG::matchToStr(*it);
-    res << ",";
-  }
 
-  res << WG::matchToStr(*it);
-  res << "}";
-
-  return res.str();
-}
-
-void WG::printMatch(const match &m)
-{
-  Alm::printGroup(m.first);
-  std::cout << "\t<> ";
-  Alm::printGroup(m.second);
-
-  std::cout << std::endl;
-
-  return;
-}
-
-void WG::printMatchSet(const matchSet &ms)
-{
-  for (const match &m : ms) {
-    std::cout << "  ";
-    WG::printMatch(m);
-  }
-
-  return;
-}
 
 void WG::printOutEdge(const WG_t &wg, const WG::eDesc &e)
 {
@@ -153,9 +116,26 @@ void WG::printOutEdge(const WG_t &wg, const WG::eDesc &e)
   std::string gp1 = Alm::groupingToStr(wg[e].gp1);
   std::string gp2 = Alm::groupingToStr(wg[e].gp2);
 
+  std::stringstream label;
 
-  std::cout << "  " << wg[src].name << " -> " << wg[dst].name;
-  std::cout << " [gp1=\"" << gp1 << "\", gp2=\"" << gp2 <<"\"]" << std::endl;
+  label << "{";
+
+  if (gp1 == "")
+    label << "-";
+  else
+    label << gp1;
+
+  label << "}, {";
+
+  if (gp2 == "")
+    label << "-";
+  else
+    label << gp2;
+
+  label << "}";
+
+  std::cout << "  \"" << wg[src].name << "\" ->  \"" << wg[dst].name << "\"";
+  std::cout << " [label=\"" << label.str() << "\", gp1=\"" << gp1 << "\", gp2=\"" << gp2 <<"\"]" << std::endl;
 
   return;
 }

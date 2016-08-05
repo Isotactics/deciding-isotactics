@@ -9,7 +9,6 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/range/iterator_range.hpp>
 
-#include "AlignmentUtils.hpp"
 #include "Utils.hpp"
 
 
@@ -25,16 +24,10 @@ struct EdgeProps {
 
 struct GraphProps {
   std::string name;
-
-  alignment alm;
-  alignmentGrouping alh;
 };
 
 using Graph_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
                                     VerticeProps, EdgeProps, GraphProps>;
-
-using labelGroupingMap = std::unordered_map<label, alignmentGrouping>;
-using labelAlmSubMap = std::unordered_map<label, alignmentSub>;
 
 
 namespace Graph {
@@ -53,19 +46,10 @@ namespace Graph {
 
   Graph_t parse(const std::string &path);
 
-  void addAlm(Graph_t &g, const alignment &al);
-  void addAlmHalf(Graph_t &g, const alignmentGrouping &gp);
-
-  alignment getAlm(const Graph_t &g);
-  alignmentHalf getAlmHalf(const Graph_t &g);
-  labelGroupingMap getLabelGroupingMap(const Graph_t &g);
-  labelAlmSubMap getLabelAlmSubMap(const Graph_t &g);
-
   Graph::vDesc getStart(const Graph_t &g);
   std::vector<Graph::vDesc> getEnds(const Graph_t &g);
 
   Range<Graph::oeIter> getOutEdges(const Graph_t &g, const Graph::vDesc &v);
-
   Graph::vDesc getVertex(const std::string &vName, const Graph_t &g);
 
 
@@ -75,17 +59,13 @@ namespace Graph {
 
   void print(const Graph_t &g);
 
-  void printAlm(const Graph_t &g);
-  void printAlmHalf(const Graph_t &g);
-
   void printVertices(const Graph_t &g);
   void printEdges(const Graph_t &g);
 
   void printOutEdge(const Graph_t &g, const Graph::eDesc &e);
   void printOutEdges(const Graph_t &g, const Graph::vDesc &vd);
 
-  void printLgm(const labelGroupingMap &lgm);
-  void printLsm(const labelAlmSubMap &lsm);
+
 }
 
 #endif // __GRAPHUTILS_HPP__
