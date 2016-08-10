@@ -17,6 +17,7 @@ namespace Util {
   }
 
   void printLine();
+  void printLineDebug();
 }
 
 #endif // __UTILS_HPP__

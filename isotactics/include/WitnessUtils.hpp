@@ -90,6 +90,10 @@ namespace WG {
   void print(const WG_t &wg);
   void printOutEdges(const WG_t &wg, const WG::vDesc &v);
   void printOutEdge(const WG_t &wg, const WG::eDesc &e);
+
+  void printDebug(const WG_t &wg);
+  void printOutEdgesDebug(const WG_t &wg, const WG::vDesc &v);
+  void printOutEdgeDebug(const WG_t &wg, const WG::eDesc &e);
 }
 
 #endif // __WITNESSUTILS_HPP__

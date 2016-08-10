@@ -176,3 +176,73 @@ void WG::print(const WG_t &wg)
 
   return;
 }
+
+
+void WG::printOutEdgeDebug(const WG_t &wg, const WG::eDesc &e)
+{
+  const WG::vDesc src = boost::source(e, wg);
+  const WG::vDesc dst = boost::target(e, wg);
+
+  std::string gp1 = Alm::groupingToStr(wg[e].gp1);
+  std::string gp2 = Alm::groupingToStr(wg[e].gp2);
+
+  std::stringstream label;
+
+  label << "{";
+
+  if (gp1 == "")
+    label << "-";
+  else
+    label << gp1;
+
+  label << "}, {";
+
+  if (gp2 == "")
+    label << "-";
+  else
+    label << gp2;
+
+  label << "}";
+
+  std::cerr << "  \"" << wg[src].name << "\" ->  \"" << wg[dst].name << "\"";
+  std::cerr << " [label=\"" << label.str() << "\", gp1=\"" << gp1 << "\", gp2=\"" << gp2 <<"\"]" << std::endl;
+
+  return;
+}
+
+void WG::printOutEdgesDebug(const WG_t &wg, const WG::vDesc &v)
+{
+  Range<WG::oeIter> oedges = Util::makeRange(boost::out_edges(v, wg));
+
+  if (oedges.empty())
+    return;
+
+  for (const WG::eDesc &e : oedges)
+    printOutEdgeDebug(wg, e);
+
+  Util::printLineDebug();
+
+  return;
+}
+
+void WG::printDebug(const WG_t &wg)
+{
+  std::cerr << "digraph {" << std::endl;
+
+  Range<WG::vIter> vertices = Util::makeRange(boost::vertices(wg));
+
+/*
+  for (const WG::vDesc &v : vertices) {
+    attributes...
+
+  }
+*/
+
+  for (const WG::vDesc &v : vertices)
+    printOutEdgesDebug(wg, v);
+
+
+  std::cerr << "}" << std::endl;
+
+  return;
+}
