@@ -1,2 +1,1 @@
-echo $1
-bin/Isotactics | dot -Tpng -o $1
+bin/Isotactics $1 $2 $3 | dot -Tpng -o $4 

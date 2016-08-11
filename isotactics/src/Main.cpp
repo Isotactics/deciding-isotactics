@@ -19,13 +19,13 @@
 */
 
 
-int main()
+int main(int argc, char *argv[])
 {
 
-  Graph_t g1 = Graph::parse("resources/m1.dot");
-  Graph_t g2 = Graph::parse("resources/m2.dot");
+  Graph_t g1 = Graph::parse(argv[1]);
+  Graph_t g2 = Graph::parse(argv[2]);
 
-  alignment alm = Alm::parse("resources/alignment.json");
+  alignment alm = Alm::parse(argv[3]);
 
   labelGroupingMap lgm1 = Alm::LabelGroupingMap(g1, Alm::Lhs(alm));
   labelGroupingMap lgm2 = Alm::LabelGroupingMap(g2, Alm::Rhs(alm));
