@@ -8,6 +8,7 @@
 #include <boost/range/iterator_range.hpp>
 
 #include "AlignmentUtils.hpp"
+#include "GraphUtils.hpp"
 #include "MatchUtils.hpp"
 #include "Utils.hpp"
 
@@ -59,33 +60,21 @@ namespace WG {
   using oeIter = WG_t::out_edge_iterator;
   using oeIterPair = std::pair<oeIter, oeIter>;
 
+  WG_t create(const Graph_t &g1, const Graph_t &g2, const alignment &alm);
 
   WG::Vertex createVertex(const vName &v1, const vName &v2, const matchSet &ms);
-
-  std::string getVertexName(const WG::Vertex &v);
-
-
-
-
+  WG::vDesc getVertex(const WG::Vertex &v, const WG_t &wg);
   WG::vDesc addVertex(const WG::Vertex &v, WG_t &wg);
 
+  std::string getVertexName(const WG::Vertex &v);
 
   WG::eDesc addEdge(WG::vDesc &v1, const alignmentGrouping &gp1,
                     const alignmentGrouping &gp2, WG::vDesc &v2, WG_t &wg);
 
-
-
-
-  WG::vDesc getVertex(const WG::Vertex &v, const WG_t &wg);
-
-
+  bool isFinalState(const WG::vDesc &wgv);
 
   bool hasVertex(const WG::Vertex &v, const WG_t &wg);
   bool vertexEqual(const WG::Vertex &v1, const WG::Vertex &v2);
-
-
-
-
 
   void print(const WG_t &wg);
   void printOutEdges(const WG_t &wg, const WG::vDesc &v);

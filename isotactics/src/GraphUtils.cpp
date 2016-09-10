@@ -17,6 +17,12 @@ Graph_t Graph::parse(const std::string &path)
   dp.property("lowlink", boost::get(&EdgeProps::lowlink, g));
 
   std::ifstream m(path);
+
+  if (!m) {
+    std::cout << "[Err] Graph::parse // ifstream open" << std::endl;
+    return g;
+  }
+
   boost::read_graphviz(m, g, dp);
 
   return g;
