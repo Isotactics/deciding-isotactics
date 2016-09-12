@@ -122,6 +122,16 @@ labelAlmSubMap Alm::LabelAlmSubMap(const Graph_t &g, const alignment &alm)
 
 }
 
+edgeLabelSet Alm::lgmFlatten(const labelGroupingMap &lgm)
+{
+  edgeLabelSet els;
+
+  for (const std::pair<label, alignmentGrouping> &p : lgm)
+    els.insert(p.second);
+
+  return els;
+}
+
 bool Alm::hasLabel(const alignmentGroup &g, const label &l)
 {
   alignmentGroup::const_iterator it;
@@ -264,6 +274,16 @@ void Alm::printLsm(const labelAlmSubMap &lsm)
   for (const std::pair<label, alignmentSub> &p : lsm) {
     std::cout << p.first << " -> " << std::endl;
     Alm::print(p.second);
+    Util::printLine();
+  }
+
+  return;
+}
+
+void Alm::printEls(const edgeLabelSet &els)
+{
+  for (const alignmentGrouping &gp : els) {
+    Alm::printGrouping(gp);
     Util::printLine();
   }
 

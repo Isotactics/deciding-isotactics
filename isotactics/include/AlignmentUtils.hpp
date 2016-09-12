@@ -27,6 +27,9 @@ using almMap = std::map<alignmentGroup, alignmentGroup>;
 using labelGroupingMap = std::unordered_map<label, alignmentGrouping>;
 using labelAlmSubMap = std::unordered_map<label, alignmentSub>;
 
+using edgeLabelSet = std::set<alignmentGrouping>;
+
+
 namespace Alm {
   alignment parse(const std::string &path);
 
@@ -39,6 +42,10 @@ namespace Alm {
   almMap AlmMap(const alignment &alm);
   labelGroupingMap LabelGroupingMap(const Graph_t &g, const alignmentHalf &alh);
   labelAlmSubMap LabelAlmSubMap(const Graph_t &g, const alignment &alm);
+
+  edgeLabelSet lgmFlatten(const labelGroupingMap &lgm);
+
+
 
   bool hasLabel(const alignmentGroup &g, const label &l);
   bool hasPair(const alignment &alm, const alignmentPair &p);
@@ -56,6 +63,7 @@ namespace Alm {
   void printAlmMap(const almMap &m);
   void printLgm(const labelGroupingMap &lgm);
   void printLsm(const labelAlmSubMap &lsm);
+  void printEls(const edgeLabelSet &els);
 }
 
 #endif // __ALIGNMENTUTILS_HPP__

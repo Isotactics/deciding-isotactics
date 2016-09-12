@@ -66,10 +66,11 @@ namespace WG {
   WG::vDesc getVertex(const WG::Vertex &v, const WG_t &wg);
   WG::vDesc addVertex(const WG::Vertex &v, WG_t &wg);
 
-  std::string getVertexName(const WG::Vertex &v);
-
   WG::eDesc addEdge(WG::vDesc &v1, const alignmentGrouping &gp1,
                     const alignmentGrouping &gp2, WG::vDesc &v2, WG_t &wg);
+
+  std::string getVertexName(const WG::Vertex &v);
+  WG::vDesc getStart(const WG_t &wg);
 
   bool isFinalState(const WG::vDesc &wgv);
 

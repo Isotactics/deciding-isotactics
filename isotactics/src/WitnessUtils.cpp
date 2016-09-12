@@ -235,14 +235,18 @@ WG::Vertex WG::createVertex(const vName &v1, const vName &v2, const matchSet &ms
   return v;
 }
 
-std::string WG::getVertexName(const WG::Vertex &v)
+WG::vDesc WG::getVertex(const WG::Vertex &v, const WG_t &wg)
 {
-  std::stringstream name;
+  WG::vDesc nv;
 
-  name << "" << v.v1Name << ", " << v.v2Name << ", ";
-  name << Match::setToString(v.ms) << "";
+  Range<WG::vIter> vertices = Util::makeRange(boost::vertices(wg));
 
-  return name.str();
+  for (const WG::vDesc &wgv : vertices) {
+    if (wg[wgv].name == v.name)
+      nv = wgv;
+  }
+
+  return nv;
 }
 
 WG::vDesc WG::addVertex(const WG::Vertex &v, WG_t &wg)
@@ -273,19 +277,27 @@ WG::eDesc WG::addEdge(WG::vDesc &v1, const alignmentGrouping &gp1,
   return e;
 }
 
-
-WG::vDesc WG::getVertex(const WG::Vertex &v, const WG_t &wg)
+std::string WG::getVertexName(const WG::Vertex &v)
 {
-  WG::vDesc nv;
+  std::stringstream name;
 
-  Range<WG::vIter> vertices = Util::makeRange(boost::vertices(wg));
+  name << "" << v.v1Name << ", " << v.v2Name << ", ";
+  name << Match::setToString(v.ms) << "";
 
-  for (const WG::vDesc &wgv : vertices) {
-    if (wg[wgv].name == v.name)
-      nv = wgv;
+  return name.str();
+}
+
+WG::vDesc WG::getStart(const WG_t &wg)
+{
+  WG::vDesc start;
+  const Range<WG::vIter> vertices = Util::makeRange(boost::vertices(wg));
+
+  for (const WG::vDesc &v : vertices) {
+    if (wg[v].role == "start")
+      start = v;
   }
 
-  return nv;
+  return start;
 }
 
 bool WG::hasVertex(const WG::Vertex &v, const WG_t &wg)

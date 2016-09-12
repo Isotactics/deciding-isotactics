@@ -31,7 +31,7 @@ Graph_t Graph::parse(const std::string &path)
 
 Graph::vDesc Graph::getStart(const Graph_t &g)
 {
-  vDesc start;
+  Graph::vDesc start;
   const Range<Graph::vIter> vertices = Util::makeRange(boost::vertices(g));
 
   for (const Graph::vDesc &v : vertices) {
@@ -63,7 +63,7 @@ Range<Graph::oeIter> Graph::getOutEdges(const Graph_t &g, const Graph::vDesc &v)
 
 Graph::vDesc Graph::getVertex(const std::string &vName, const Graph_t &g)
 {
-  vDesc res;
+  Graph::vDesc res;
   const Range<Graph::vIter> vertices = Util::makeRange(boost::vertices(g));
 
   for (const Graph::vDesc &v : vertices) {
@@ -122,7 +122,7 @@ void Graph::printOutEdge(const Graph_t &g, const eDesc &e)
   std::cout << " [label=\"" << g[e].label << "\"]" << std::endl;
 }
 
-void Graph::printOutEdges(const Graph_t &g, const vDesc &vd) {
+void Graph::printOutEdges(const Graph_t &g, const Graph::vDesc &vd) {
 
   const Range<Graph::oeIter> outEdges = Util::makeRange(boost::out_edges(vd, g));
 
