@@ -23,15 +23,12 @@
 
 
 
-
-
 int main(int argc, char *argv[])
 {
   if (argc != 4) {
     std::cout << "Usage: " << argv[0] << " m1.dot m2.dot alignment.json" << std::endl;
     return 0;
   }
-
 
   Graph_t g1 = Graph::parse(argv[1]);
   Graph_t g2 = Graph::parse(argv[2]);
@@ -46,26 +43,15 @@ int main(int argc, char *argv[])
 
 
   WG_t wg = WG::create(g1, g2, alm);
-  WG::vDesc wgStart = WG::getStart(wg);
+//  WG::print(wg);
 
 
-
-  DWG_t dwg1;
-
-  DWG::Vertex dwg1Start = DWG::createVertex("", "start");
-  DWG::addWGVertex(wgStart, dwg1Start, dwg1);
-
-  addVertex(dwg1Start, dwg1);
+//  DWG_t dwg1 = DWG::createLhs(wg, els1);
+//  DWG::print(dwg1, wg);
 
 
-  Range<DWG::vIter> vertices = Util::makeRange(boost::vertices(dwg1));
-
-  for (const DWG::vDesc &dwgv : vertices)
-    std::cout << dwg1[dwgv].role << std::endl;
-
-
-
-
+  DWG_t dwg2 = DWG::createRhs(wg, els2);
+  DWG::print(dwg2, wg);
 
 
 

@@ -13,4 +13,4 @@ mkdir --parents build
 
 cd build
 cmake ..
-make -j 8
+make -j 16

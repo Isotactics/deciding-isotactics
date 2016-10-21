@@ -52,20 +52,56 @@ namespace DWG {
   using oeIter = DWG_t::out_edge_iterator;
   using oeIterPair = std::pair<oeIter, oeIter>;
 
+  DWG_t createLhs(const WG_t &wg, const edgeLabelSet &els);
+  DWG_t createRhs(const WG_t &wg, const edgeLabelSet &els);
 
+  DWG::Vertex createVertex();
   DWG::Vertex createVertex(const std::string &name, const std::string &role);
-  void addWGVertex(const WG::vDesc &wgv, DWG::Vertex &dwgv, DWG_t &dwg);
+
+  void addVertexToSet(DWG::Vertex &dwgv, const WG::vDesc wgv, const WG_t &wg);
+  void addVertexToSet(DWG_t &dwg, DWG::vDesc &dwgv, const WG::vDesc wgv, const WG_t &wg);
+
+  void updateVertexName(DWG::Vertex &dwgv, const WG_t &wg);
+  void updateVertexName(const DWG::vDesc &dwgv, DWG_t &dwg, const WG_t &wg);
+
+  DWG::vDesc addVertex(DWG_t &dwg, const DWG::Vertex &v, const WG_t &wg);
+  DWG::vDesc addEmptyVertex(DWG_t &dwg);
+
+  DWG::eDesc addEdge(DWG::vDesc &v1, const alignmentGrouping &gp, DWG::vDesc &v2, DWG_t &dwg);
+
+  DWG::Vertex getVertex(const DWG::vDesc &v, const DWG_t &dwg);
+  DWG::vDesc  getVertex(const DWG::Vertex &v, const DWG_t &dwg);
 
 
-  void addWGVertex(const WG::vDesc &wgv, const DWG::vDesc &dwgv, DWG_t &dwg);
+  std::vector<WG::eDesc> getOutEdges(const DWG::Vertex &v, const WG_t &wg);
+  std::vector<WG::eDesc> getOutEdges(const DWG_t & dwg, const WG_t &wg, const DWG::vDesc &v);
 
-  DWG::vDesc addVertex(const DWG::Vertex &v, DWG_t &dwg);
+  bool hasVertex(const DWG::Vertex &v, const DWG_t &dwg);
+  bool vertexHasVertex(const DWG::Vertex &dwgv, const WG::vDesc &wgv);
+
+  bool hasVertexThatContains(const WG::vDesc &v, const DWG_t &dwg);
+
+  DWG::vDesc getVertexThatContains(const WG::vDesc &wgv, const DWG_t &dwg);
+
+  bool alreadyVisited(const std::vector<WG::vDesc> &vs, const WG::vDesc &t);
+  bool alreadyContained(const DWG::Vertex &v, const WG::vDesc &nv);
+  bool destinationsAreSubset(const std::vector<WG::vDesc> dsts, const DWG::Vertex &v);
+
+  void findAllNodesLhs(DWG::Vertex &v, const DWG_t &dwg, const WG_t &wg);
+  void findAllNodesRhs(DWG::Vertex &v, const DWG_t &dwg, const WG_t &wg);
 
 
-  //DWG::vDesc addEmptyVertex(DWG_t &dwg);
+  void setFinalState(DWG::Vertex &v, const WG_t &wg);
 
 
-  void print(const DWG_t &dwg);
+
+
+
+
+  void print(const DWG_t &dwg, const WG_t &wg);
+  void printOutEdges(const DWG::vDesc &v, const DWG_t &dwg, const WG_t &wg);
+  void printOutEdge(const DWG::eDesc &e, const DWG_t &dwg, const WG_t &wg);
+
 
 }
 

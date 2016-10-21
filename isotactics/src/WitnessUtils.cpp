@@ -320,7 +320,128 @@ bool WG::vertexEqual(const WG::Vertex &v1, const WG::Vertex &v2)
   return false;
 }
 
+bool WG::hasEdgeLhs(const std::vector<WG::eDesc> &oes, const alignmentGrouping &gp, const WG_t &wg)
+{
+  for (const WG::eDesc &e : oes) {
+    if (Alm::groupingEqual(wg[e].gp1, gp))
+      return true;
+  }
 
+  return false;
+}
+
+bool WG::hasEdgeRhs(const std::vector<WG::eDesc> &oes, const alignmentGrouping &gp, const WG_t &wg)
+{
+  for (const WG::eDesc &e : oes) {
+    if (Alm::groupingEqual(wg[e].gp2, gp))
+      return true;
+  }
+
+  return false;
+}
+
+bool WG::hasEmptyTransitionLhs(const std::vector<WG::eDesc> &oes, const WG_t &wg)
+{
+  for (const WG::eDesc &e : oes) {
+    if (wg[e].gp1.empty())
+      return true;
+  }
+
+  return false;
+}
+
+bool WG::hasEmptyTransitionRhs(const std::vector<WG::eDesc> &oes, const WG_t &wg)
+{
+  for (const WG::eDesc &e : oes) {
+    if (wg[e].gp2.empty())
+      return true;
+  }
+
+  return false;
+}
+
+bool WG::hasEmptyTransitionLhs(const Range<WG::oeIter> &oes, const WG_t &wg)
+{
+  for (const WG::eDesc &e : oes) {
+    if (wg[e].gp1.empty())
+      return true;
+  }
+
+  return false;
+}
+
+bool WG::hasEmptyTransitionRhs(const Range<WG::oeIter> &oes, const WG_t &wg)
+{
+  for (const WG::eDesc &e : oes) {
+    if (wg[e].gp2.empty())
+      return true;
+  }
+
+  return false;
+}
+
+std::vector<WG::eDesc> WG::getEdgesWithLabelLhs(const std::vector<WG::eDesc> &oes,
+                                                const alignmentGrouping &gp,
+                                                const WG_t &wg)
+{
+  std::vector<WG::eDesc> edges;
+
+  for (const WG::eDesc &e : oes) {
+    if (Alm::groupingEqual(wg[e].gp1, gp))
+      edges.push_back(e);
+  }
+
+  return edges;
+}
+
+std::vector<WG::eDesc> WG::getEdgesWithLabelRhs(const std::vector<WG::eDesc> &oes,
+                                                const alignmentGrouping &gp,
+                                                const WG_t &wg)
+{
+  std::vector<WG::eDesc> edges;
+
+  for (const WG::eDesc &e : oes) {
+    if (Alm::groupingEqual(wg[e].gp2, gp))
+      edges.push_back(e);
+  }
+
+  return edges;
+}
+
+
+std::vector<WG::vDesc> WG::getDestinations(const std::vector<WG::eDesc> &es, const WG_t &wg)
+{
+  std::vector<WG::vDesc> dsts;
+
+  for (const WG::eDesc &e : es)
+    dsts.push_back(boost::target(e, wg));
+
+  return dsts;
+}
+
+std::vector<WG::eDesc> WG::getEmptyEdgesLhs(const Range<WG::oeIter> &oes, const WG_t &wg)
+{
+  std::vector<WG::eDesc> eedges;
+
+  for (const WG::eDesc &e : oes) {
+    if (wg[e].gp1.empty())
+      eedges.push_back(e);
+  }
+
+  return eedges;
+}
+
+std::vector<WG::eDesc> WG::getEmptyEdgesRhs(const Range<WG::oeIter> &oes, const WG_t &wg)
+{
+  std::vector<WG::eDesc> eedges;
+
+  for (const WG::eDesc &e : oes) {
+    if (wg[e].gp2.empty())
+      eedges.push_back(e);
+  }
+
+  return eedges;
+}
 
 
 
@@ -402,7 +523,7 @@ void WG::print(const WG_t &wg)
   Util::printLine();
 
   for (const WG::vDesc &v : vertices)
-    printOutEdges(wg, v);
+    WG::printOutEdges(wg, v);
 
 
   std::cout << "}" << std::endl;

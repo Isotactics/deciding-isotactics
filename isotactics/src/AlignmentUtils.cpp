@@ -129,6 +129,9 @@ edgeLabelSet Alm::lgmFlatten(const labelGroupingMap &lgm)
   for (const std::pair<label, alignmentGrouping> &p : lgm)
     els.insert(p.second);
 
+  alignmentGrouping empty;
+  els.insert(empty);
+
   return els;
 }
 
@@ -154,6 +157,16 @@ bool Alm::hasPair(const alignment &alm, const alignmentPair &p)
   return false;
 }
 
+bool Alm::groupEqual(const alignmentGroup &g1, const alignmentGroup &g2)
+{
+  return std::equal(g1.begin(), g1.end(), g2.begin(), g2.end());
+}
+
+bool Alm::groupingEqual(const alignmentGrouping &gp1, const alignmentGrouping &gp2)
+{
+  return std::equal(gp1.begin(), gp1.end(), gp2.begin(), gp2.end(), Alm::groupEqual);
+}
+
 alignmentGrouping Alm::getGrouping(const label &l, const alignmentHalf &alh)
 {
   alignmentGrouping res;
@@ -175,6 +188,9 @@ std::string Alm::groupToStr(const alignmentGroup &g)
 
 std::string Alm::groupingToStr(const alignmentGrouping &gp)
 {
+  if (gp.empty())
+    return "-";
+
   std::vector<std::string> tmp;
 
   for (const alignmentGroup &g : gp)
@@ -221,6 +237,11 @@ void Alm::printPair(const alignmentPair &p)
 
 void Alm::printGrouping(const alignmentGrouping &gp)
 {
+  if (gp.size() == 0) {
+    std::cout << "-";
+    return;
+  }
+
   alignmentGrouping::const_iterator it;
 
   for (it = gp.begin(); it != (gp.end() - 1); ++it) {

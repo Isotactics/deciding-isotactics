@@ -49,6 +49,8 @@ namespace Alm {
 
   bool hasLabel(const alignmentGroup &g, const label &l);
   bool hasPair(const alignment &alm, const alignmentPair &p);
+  bool groupEqual(const alignmentGroup &g1, const alignmentGroup &g2);
+  bool groupingEqual(const alignmentGrouping &gp1, const alignmentGrouping &gp2);
 
   alignmentGrouping getGrouping(const label &l, const alignmentHalf &alh);
 

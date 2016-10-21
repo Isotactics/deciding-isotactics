@@ -2,6 +2,7 @@
 #define __WITNESSUTILS_HPP__
 
 #include <string>
+#include <vector>
 
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/adjacency_list.hpp>
@@ -76,6 +77,27 @@ namespace WG {
 
   bool hasVertex(const WG::Vertex &v, const WG_t &wg);
   bool vertexEqual(const WG::Vertex &v1, const WG::Vertex &v2);
+
+  bool hasEdgeLhs(const std::vector<WG::eDesc> &oes,const alignmentGrouping &gp, const WG_t &wg);
+  bool hasEdgeRhs(const std::vector<WG::eDesc> &oes, const alignmentGrouping &gp, const WG_t &wg);
+
+  bool hasEmptyTransitionLhs(const Range<WG::oeIter> &oes, const WG_t &wg);
+  bool hasEmptyTransitionRhs(const Range<WG::oeIter> &oes, const WG_t &wg);
+
+  bool hasEmptyTransitionLhs(const std::vector<WG::eDesc> &oes, const WG_t &wg);
+  bool hasEmptyTransitionRhs(const std::vector<WG::eDesc> &oes, const WG_t &wg);
+
+  std::vector<WG::eDesc> getEdgesWithLabelLhs(const std::vector<WG::eDesc> &oes, const alignmentGrouping &gp, const WG_t &wg);
+  std::vector<WG::eDesc> getEdgesWithLabelRhs(const std::vector<WG::eDesc> &oes, const alignmentGrouping &gp, const WG_t &wg);
+
+
+  std::vector<WG::vDesc> getDestinations(const std::vector<WG::eDesc> &es, const WG_t &wg);
+
+  std::vector<WG::eDesc> getEmptyEdgesLhs(const Range<WG::oeIter> &oes, const WG_t &wg);
+  std::vector<WG::eDesc> getEmptyEdgesRhs(const Range<WG::oeIter> &oes, const WG_t &wg);
+
+
+
 
   void print(const WG_t &wg);
   void printOutEdges(const WG_t &wg, const WG::vDesc &v);
