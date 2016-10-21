@@ -201,7 +201,7 @@ DWG_t DWG::createRhs(const WG_t &wg, const edgeLabelSet &els)
 
     } // label loop
 
-    DWG::print(dwg, wg);
+    //DWG::print(dwg, wg);
 
     std::cerr << "\nTodo:\n";
 
