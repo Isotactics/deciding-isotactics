@@ -510,12 +510,12 @@ void WG::print(const WG_t &wg)
   for (const WG::vDesc &v : vertices) {
 
     if (wg[v].role == "start") {
-      std::cout << "  " << wg[v].name << " [role=\"start\"]" << std::endl;
+      std::cout << "  \"" << wg[v].name << "\" [role=\"start\"]" << std::endl;
       continue;
     }
 
     if (wg[v].role == "end") {
-      std::cout << "  " << wg[v].name << " [role=\"end\"]" << std::endl;
+      std::cout << "  \"" << wg[v].name << "\" [role=\"end\"]" << std::endl;
       continue;
     }
   }

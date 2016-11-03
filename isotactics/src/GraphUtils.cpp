@@ -75,6 +75,21 @@ Graph::vDesc Graph::getVertex(const std::string &vName, const Graph_t &g)
 }
 
 
+Graph::vDesc Graph::getDst(const Graph::vDesc &v, const std::string &l, const Graph_t &g)
+{
+  Graph::vDesc dst;
+
+  Range<Graph::oeIter> oes = Graph::getOutEdges(g, v);
+
+  for (const Graph::eDesc &e : oes) {
+    if (g[e].label == l) {
+      dst = boost::target(e, g);
+      break;
+    }
+  }
+
+  return dst;
+}
 
 
 
@@ -86,6 +101,20 @@ Graph::vDesc Graph::getVertex(const std::string &vName, const Graph_t &g)
 void Graph::print(const Graph_t &g)
 {
   Range<Graph::vIter> vertices = Util::makeRange(boost::vertices(g));
+
+  for (const Graph::vDesc &v : vertices) {
+    if (g[v].role == "start") {
+      std::cout << "  \"" << g[v].name << "\" [role=\"start\"]" << std::endl;
+      continue;
+    }
+
+    if (g[v].role == "end") {
+      std::cout << "  \"" << g[v].name << "\" [role=\"end\"]" << std::endl;
+      continue;
+    }
+  }
+
+  Util::printLine();
 
   for (const Graph::vDesc &v : vertices)
     Graph::printOutEdges(g, v);

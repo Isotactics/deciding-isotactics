@@ -52,8 +52,7 @@ namespace Graph {
   Range<Graph::oeIter> getOutEdges(const Graph_t &g, const Graph::vDesc &v);
   Graph::vDesc getVertex(const std::string &vName, const Graph_t &g);
 
-
-
+  Graph::vDesc getDst(const Graph::vDesc &v, const std::string &l, const Graph_t &g);
 
 
 

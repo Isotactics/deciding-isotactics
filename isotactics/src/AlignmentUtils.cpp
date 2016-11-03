@@ -129,8 +129,8 @@ edgeLabelSet Alm::lgmFlatten(const labelGroupingMap &lgm)
   for (const std::pair<label, alignmentGrouping> &p : lgm)
     els.insert(p.second);
 
-  alignmentGrouping empty;
-  els.insert(empty);
+  //alignmentGrouping empty;
+  //els.insert(empty);
 
   return els;
 }

@@ -65,13 +65,15 @@ namespace DWG {
   void updateVertexName(const DWG::vDesc &dwgv, DWG_t &dwg, const WG_t &wg);
 
   DWG::vDesc addVertex(DWG_t &dwg, const DWG::Vertex &v, const WG_t &wg);
-  DWG::vDesc addEmptyVertex(DWG_t &dwg);
+  DWG::vDesc addEmptyVertex(DWG_t &dwg, const edgeLabelSet &els);
 
   DWG::eDesc addEdge(DWG::vDesc &v1, const alignmentGrouping &gp, DWG::vDesc &v2, DWG_t &dwg);
 
   DWG::Vertex getVertex(const DWG::vDesc &v, const DWG_t &dwg);
   DWG::vDesc  getVertex(const DWG::Vertex &v, const DWG_t &dwg);
 
+  DWG::vDesc getStart(const DWG_t &dwg);
+  DWG::vDesc getDst(const DWG::vDesc &v, const alignmentGrouping &gp, const DWG_t &dwg);
 
   std::vector<WG::eDesc> getOutEdges(const DWG::Vertex &v, const WG_t &wg);
   std::vector<WG::eDesc> getOutEdges(const DWG_t & dwg, const WG_t &wg, const DWG::vDesc &v);

@@ -9,7 +9,7 @@
 DWG_t DWG::createLhs(const WG_t &wg, const edgeLabelSet &els)
 {
   DWG_t dwg;
-  DWG::vDesc dwgEmpty = DWG::addEmptyVertex(dwg);
+  DWG::vDesc dwgEmpty = DWG::addEmptyVertex(dwg, els);
 
   DWG::Vertex dwgStart = DWG::createVertex("", "start");
   WG::vDesc wgStart = WG::getStart(wg);
@@ -18,7 +18,6 @@ DWG_t DWG::createLhs(const WG_t &wg, const edgeLabelSet &els)
   DWG::addVertex(dwg, dwgStart, wg);
 
   std::deque<DWG::Vertex> dwgTodo;
-  std::vector<DWG::vDesc> visited;
 
   dwgTodo.push_back(dwgStart);
 
@@ -113,7 +112,7 @@ DWG_t DWG::createLhs(const WG_t &wg, const edgeLabelSet &els)
 DWG_t DWG::createRhs(const WG_t &wg, const edgeLabelSet &els)
 {
   DWG_t dwg;
-  DWG::vDesc dwgEmpty = DWG::addEmptyVertex(dwg);
+  DWG::vDesc dwgEmpty = DWG::addEmptyVertex(dwg, els);
 
   DWG::Vertex dwgStart = DWG::createVertex("", "start");
   WG::vDesc wgStart = WG::getStart(wg);
@@ -337,6 +336,34 @@ DWG::vDesc DWG::getVertex(const DWG::Vertex &v, const DWG_t &dwg)
   return nv;
 }
 
+DWG::vDesc DWG::getStart(const DWG_t &dwg)
+{
+  DWG::vDesc start;
+  const Range<DWG::vIter> vertices = Util::makeRange(boost::vertices(dwg));
+
+  for (const DWG::vDesc &v : vertices) {
+    if (dwg[v].role == "start")
+      start = v;
+  }
+
+  return start;
+}
+
+
+DWG::vDesc DWG::getDst(const DWG::vDesc &v, const alignmentGrouping &gp, const DWG_t &dwg)
+{
+  DWG::vDesc dst;
+
+  Range<DWG::oeIter> oes = Util::makeRange(boost::out_edges(v, dwg));
+
+  for (const DWG::eDesc &e : oes) {
+    if (dwg[e].gp == gp)
+      return boost::target(e, dwg);
+  }
+
+  return dst;
+}
+
 std::vector<WG::eDesc> DWG::getOutEdges(const DWG::Vertex &v, const WG_t &wg)
 {
   std::vector<WG::eDesc> oedges;
@@ -383,12 +410,15 @@ bool DWG::vertexHasVertex(const DWG::Vertex &dwgv, const WG::vDesc &wgv)
   return (std::find(dwgv.vs.begin(), dwgv.vs.end(), wgv) != dwgv.vs.end());
 }
 
-DWG::vDesc DWG::addEmptyVertex(DWG_t &dwg)
+DWG::vDesc DWG::addEmptyVertex(DWG_t &dwg, const edgeLabelSet &els)
 {
   DWG::vDesc nv = boost::add_vertex(dwg);
 
   dwg[nv].name = "{}";
   dwg[nv].role = "empty";
+
+  for (const alignmentGrouping &gp : els)
+    DWG::addEdge(nv, gp, nv, dwg);
 
   return nv;
 }
