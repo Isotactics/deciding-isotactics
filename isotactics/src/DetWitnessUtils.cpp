@@ -357,8 +357,10 @@ DWG::vDesc DWG::getDst(const DWG::vDesc &v, const alignmentGrouping &gp, const D
   Range<DWG::oeIter> oes = Util::makeRange(boost::out_edges(v, dwg));
 
   for (const DWG::eDesc &e : oes) {
-    if (dwg[e].gp == gp)
-      return boost::target(e, dwg);
+    if (dwg[e].gp == gp) {
+      dst = boost::target(e, dwg);
+      break;
+    }
   }
 
   return dst;
