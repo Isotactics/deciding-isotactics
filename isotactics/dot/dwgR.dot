@@ -1,0 +1,41 @@
+digraph {
+  "{(1, I, {})}" [role="start"]
+  "{(3, IV, {(d,e <> s,w,x)})}" [role="end"]
+
+  "{(1, I, {})}" ->  "{}" [label="{-}", gp="-"]
+  "{(1, I, {})}" ->  "{}" [label="{s,v}", gp="s,v"]
+  "{(1, I, {})}" ->  "{(1, II, {(a <> s,v)}), (3, II, {(d,e <> s,w,x)})}" [label="{s,v | s,w,x}", gp="s,v | s,w,x"]
+  "{(1, I, {})}" ->  "{}" [label="{s,w,x}", gp="s,w,x"]
+  "{(1, I, {})}" ->  "{(2, III, {(b,c <> t,u)}), (1, III, {(b,c <> t,u)})}" [label="{t,u}", gp="t,u"]
+
+  "{(1, II, {(a <> s,v)}), (3, II, {(d,e <> s,w,x)})}" ->  "{(1, II, {(a <> s,v)}), (3, II, {(d,e <> s,w,x)})}" [label="{-}", gp="-"]
+  "{(1, II, {(a <> s,v)}), (3, II, {(d,e <> s,w,x)})}" ->  "{}" [label="{s,v}", gp="s,v"]
+  "{(1, II, {(a <> s,v)}), (3, II, {(d,e <> s,w,x)})}" ->  "{}" [label="{s,v | s,w,x}", gp="s,v | s,w,x"]
+  "{(1, II, {(a <> s,v)}), (3, II, {(d,e <> s,w,x)})}" ->  "{(3, IV, {(d,e <> s,w,x)})}" [label="{s,w,x}", gp="s,w,x"]
+  "{(1, II, {(a <> s,v)}), (3, II, {(d,e <> s,w,x)})}" ->  "{(2, I, {(b,c <> t,u)}), (1, I, {(b,c <> t,u)})}" [label="{t,u}", gp="t,u"]
+
+  "{(2, III, {(b,c <> t,u)}), (1, III, {(b,c <> t,u)})}" ->  "{(2, III, {(b,c <> t,u)}), (1, III, {(b,c <> t,u)})}" [label="{-}", gp="-"]
+  "{(2, III, {(b,c <> t,u)}), (1, III, {(b,c <> t,u)})}" ->  "{(1, I, {(a <> s,v)})}" [label="{s,v}", gp="s,v"]
+  "{(2, III, {(b,c <> t,u)}), (1, III, {(b,c <> t,u)})}" ->  "{}" [label="{s,v | s,w,x}", gp="s,v | s,w,x"]
+  "{(2, III, {(b,c <> t,u)}), (1, III, {(b,c <> t,u)})}" ->  "{(3, IV, {(d,e <> s,w,x)})}" [label="{s,w,x}", gp="s,w,x"]
+  "{(2, III, {(b,c <> t,u)}), (1, III, {(b,c <> t,u)})}" ->  "{}" [label="{t,u}", gp="t,u"]
+
+  "{(3, IV, {(d,e <> s,w,x)})}" ->  "{(3, IV, {(d,e <> s,w,x)})}" [label="{-}", gp="-"]
+  "{(3, IV, {(d,e <> s,w,x)})}" ->  "{}" [label="{s,v}", gp="s,v"]
+  "{(3, IV, {(d,e <> s,w,x)})}" ->  "{}" [label="{s,v | s,w,x}", gp="s,v | s,w,x"]
+  "{(3, IV, {(d,e <> s,w,x)})}" ->  "{}" [label="{s,w,x}", gp="s,w,x"]
+  "{(3, IV, {(d,e <> s,w,x)})}" ->  "{}" [label="{t,u}", gp="t,u"]
+
+  "{(2, I, {(b,c <> t,u)}), (1, I, {(b,c <> t,u)})}" ->  "{(2, I, {(b,c <> t,u)}), (1, I, {(b,c <> t,u)})}" [label="{-}", gp="-"]
+  "{(2, I, {(b,c <> t,u)}), (1, I, {(b,c <> t,u)})}" ->  "{}" [label="{s,v}", gp="s,v"]
+  "{(2, I, {(b,c <> t,u)}), (1, I, {(b,c <> t,u)})}" ->  "{(1, II, {(a <> s,v)}), (3, II, {(d,e <> s,w,x)})}" [label="{s,v | s,w,x}", gp="s,v | s,w,x"]
+  "{(2, I, {(b,c <> t,u)}), (1, I, {(b,c <> t,u)})}" ->  "{}" [label="{s,w,x}", gp="s,w,x"]
+  "{(2, I, {(b,c <> t,u)}), (1, I, {(b,c <> t,u)})}" ->  "{(2, III, {(b,c <> t,u)}), (1, III, {(b,c <> t,u)})}" [label="{t,u}", gp="t,u"]
+
+  "{(1, I, {(a <> s,v)})}" ->  "{(1, I, {(a <> s,v)})}" [label="{-}", gp="-"]
+  "{(1, I, {(a <> s,v)})}" ->  "{}" [label="{s,v}", gp="s,v"]
+  "{(1, I, {(a <> s,v)})}" ->  "{(1, II, {(a <> s,v)}), (3, II, {(d,e <> s,w,x)})}" [label="{s,v | s,w,x}", gp="s,v | s,w,x"]
+  "{(1, I, {(a <> s,v)})}" ->  "{}" [label="{s,w,x}", gp="s,w,x"]
+  "{(1, I, {(a <> s,v)})}" ->  "{(2, III, {(b,c <> t,u)}), (1, III, {(b,c <> t,u)})}" [label="{t,u}", gp="t,u"]
+
+}

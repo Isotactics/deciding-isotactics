@@ -1,0 +1,135 @@
+#include <string>
+#include <boost/algorithm/string/join.hpp>
+
+#include "CompareUtils.hpp"
+
+bool Cmp::isExitCondition(const Cmp::VertexPair &v, const Graph_t &g, const DWG_t &dwg)
+{
+  Graph::vDesc gv = v.gv;
+  DWG::vDesc dwgv = v.dwgv;
+
+  if ((g[gv].role == "end") && (dwg[dwgv].role != "end"))
+    return true;
+
+  return false;
+}
+
+bool Cmp::alreadyVisited(const Cmp::Vertex &v, std::vector<Cmp::Vertex> visited)
+{
+
+  for (const Cmp::Vertex &vv : visited) {
+    if (v.pair == vv.pair)
+      return true;
+  }
+
+  return false;
+}
+
+bool Cmp::isEqual(const Graph_t &g, const DWG_t &dwg, const labelGroupingMap &lgm) {
+
+  Graph::vDesc gStart = Graph::getStart(g);
+  DWG::vDesc dwgStart = DWG::getStart(dwg);
+
+  Cmp::Vertex start(gStart, dwgStart);
+
+  if (isExitCondition(start.pair, g, dwg))
+    return false;
+
+  std::deque<Cmp::Vertex> cmpTodo;
+  cmpTodo.push_back(start);
+
+  std::vector<Cmp::Vertex> visited;
+
+
+  //for (int i = 0; i < 5; i++) {
+  while (!cmpTodo.empty()) {
+
+    Cmp::Vertex curr = cmpTodo.front();
+    cmpTodo.pop_front();
+
+    visited.push_back(curr);
+
+    Graph::vDesc gv = curr.pair.gv;
+    DWG::vDesc dwgv = curr.pair.dwgv;
+
+    std::cerr << "working on: " << Cmp::vpToString(curr.pair, g, dwg) << std::endl;
+
+    Range<Graph::oeIter> oes = Graph::getOutEdges(g, gv);
+
+    for (const Graph::eDesc &e : oes) {
+
+      label l = g[e].label;
+      std::cerr << "  checking label " << l << std::endl;
+
+      Graph::vDesc gDst = Graph::getDst(gv, l, g);
+      DWG::vDesc dwgDst = DWG::getDst(dwgv, lgm.find(l)->second, dwg);
+
+      Cmp::Vertex dst(gDst, dwgDst);
+      Cmp::inheritPath(dst, curr);
+
+      std::cerr << "  destination: " << Cmp::vpToString(dst.pair, g, dwg) << std::endl;
+
+      if (isExitCondition(dst.pair, g, dwg)) {
+        std::cout << "\nexit condition at: " << vertexToString(dst, g, dwg) << std::endl;
+        return false;
+      }
+
+      if (alreadyVisited(dst, visited)) {
+        std::cerr << "  destination already visited. continue.\n\n";
+        continue;
+      }
+
+      std::cerr << "  adding new destination\n\n";
+      cmpTodo.push_back(dst);
+    }
+
+    std::cerr << "ToDo:\n";
+
+    for (const Cmp::Vertex &v : cmpTodo)
+      std::cerr << Cmp::vpToString(v.pair, g, dwg) << std::endl;
+
+    std::cerr << "\nVisited:\n";
+    for (const Cmp::Vertex &v : visited)
+      std::cerr << Cmp::vpToString(v.pair, g, dwg) << std::endl;
+
+    std::cerr << "\n\n\n\n\n";
+  }
+
+  return true;
+}
+
+void Cmp::inheritPath(Cmp::Vertex &v, const Cmp::Vertex &vpath)
+{
+  for (const VertexPair &vp : vpath.path)
+    v.path.push_back(vp);
+
+  v.path.push_back(vpath.pair);
+}
+
+std::string Cmp::vpToString(const Cmp::VertexPair &vp, const Graph_t &g, const DWG_t &dwg)
+{
+  Graph::vDesc gv = vp.gv;
+  DWG::vDesc dwgv = vp.dwgv;
+
+  std::string res = "";
+  res +=  g[gv].name;
+  res += ", ";
+  res += dwg[dwgv].name;
+
+  return res;
+}
+
+std::string Cmp::vertexToString(const Cmp::Vertex &v, const Graph_t &g, const DWG_t &dwg)
+{
+  std::string res = Cmp::vpToString(v.pair, g, dwg);
+
+
+  std::vector<std::string> tmp;
+
+  for (const Cmp::VertexPair &p : v.path)
+    tmp.push_back(Cmp::vpToString(p, g, dwg));
+
+  res += "  [" + boost::algorithm::join(tmp, " -> ") + "]";
+
+  return res;
+}

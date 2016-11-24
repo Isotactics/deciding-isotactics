@@ -1,0 +1,37 @@
+digraph {
+  "1, I, {}" [role="start"]
+  "3, IV, {(d,e <> s,w,x)}" [role="end"]
+
+  "1, I, {}" ->  "1, II, {(a <> s,v)}" [label="{a}, {s,v | s,w,x}", gp1="a", gp2="s,v | s,w,x"]
+  "1, I, {}" ->  "2, III, {(b,c <> t,u)}" [label="{b,c}, {t,u}", gp1="b,c", gp2="t,u"]
+  "1, I, {}" ->  "3, II, {(d,e <> s,w,x)}" [label="{d,e}, {s,v | s,w,x}", gp1="d,e", gp2="s,v | s,w,x"]
+
+  "1, II, {(a <> s,v)}" ->  "2, I, {(b,c <> t,u)}" [label="{b,c}, {t,u}", gp1="b,c", gp2="t,u"]
+  "1, II, {(a <> s,v)}" ->  "3, IV, {(d,e <> s,w,x)}" [label="{d,e}, {s,w,x}", gp1="d,e", gp2="s,w,x"]
+  "1, II, {(a <> s,v)}" ->  "1, II, {(a <> s,v)}" [label="{a}, {-}", gp1="a", gp2="-"]
+
+  "2, III, {(b,c <> t,u)}" ->  "1, III, {(b,c <> t,u)}" [label="{b,c}, {-}", gp1="b,c", gp2="-"]
+
+  "3, II, {(d,e <> s,w,x)}" ->  "3, II, {(d,e <> s,w,x)}" [label="{d,e}, {-}", gp1="d,e", gp2="-"]
+  "3, II, {(d,e <> s,w,x)}" ->  "3, IV, {(d,e <> s,w,x)}" [label="{-}, {s,w,x}", gp1="-", gp2="s,w,x"]
+
+  "2, I, {(b,c <> t,u)}" ->  "1, I, {(b,c <> t,u)}" [label="{b,c}, {-}", gp1="b,c", gp2="-"]
+  "2, I, {(b,c <> t,u)}" ->  "2, III, {(b,c <> t,u)}" [label="{-}, {t,u}", gp1="-", gp2="t,u"]
+
+  "3, IV, {(d,e <> s,w,x)}" ->  "3, IV, {(d,e <> s,w,x)}" [label="{d,e}, {-}", gp1="d,e", gp2="-"]
+
+  "1, III, {(b,c <> t,u)}" ->  "1, I, {(a <> s,v)}" [label="{a}, {s,v}", gp1="a", gp2="s,v"]
+  "1, III, {(b,c <> t,u)}" ->  "3, IV, {(d,e <> s,w,x)}" [label="{d,e}, {s,w,x}", gp1="d,e", gp2="s,w,x"]
+  "1, III, {(b,c <> t,u)}" ->  "2, III, {(b,c <> t,u)}" [label="{b,c}, {-}", gp1="b,c", gp2="-"]
+
+  "1, I, {(b,c <> t,u)}" ->  "1, II, {(a <> s,v)}" [label="{a}, {s,v | s,w,x}", gp1="a", gp2="s,v | s,w,x"]
+  "1, I, {(b,c <> t,u)}" ->  "3, II, {(d,e <> s,w,x)}" [label="{d,e}, {s,v | s,w,x}", gp1="d,e", gp2="s,v | s,w,x"]
+  "1, I, {(b,c <> t,u)}" ->  "2, I, {(b,c <> t,u)}" [label="{b,c}, {-}", gp1="b,c", gp2="-"]
+  "1, I, {(b,c <> t,u)}" ->  "1, III, {(b,c <> t,u)}" [label="{-}, {t,u}", gp1="-", gp2="t,u"]
+
+  "1, I, {(a <> s,v)}" ->  "2, III, {(b,c <> t,u)}" [label="{b,c}, {t,u}", gp1="b,c", gp2="t,u"]
+  "1, I, {(a <> s,v)}" ->  "3, II, {(d,e <> s,w,x)}" [label="{d,e}, {s,v | s,w,x}", gp1="d,e", gp2="s,v | s,w,x"]
+  "1, I, {(a <> s,v)}" ->  "1, I, {(a <> s,v)}" [label="{a}, {-}", gp1="a", gp2="-"]
+  "1, I, {(a <> s,v)}" ->  "1, II, {(a <> s,v)}" [label="{-}, {s,v | s,w,x}", gp1="-", gp2="s,v | s,w,x"]
+
+}
