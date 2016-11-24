@@ -89,8 +89,8 @@ namespace DWG {
   bool alreadyContained(const DWG::Vertex &v, const WG::vDesc &nv);
   bool destinationsAreSubset(const std::vector<WG::vDesc> dsts, const DWG::Vertex &v);
 
-  void findAllNodesLhs(DWG::Vertex &v, const DWG_t &dwg, const WG_t &wg);
-  void findAllNodesRhs(DWG::Vertex &v, const DWG_t &dwg, const WG_t &wg);
+  void findAllNodesLhs(DWG::Vertex &v, const WG_t &wg);
+  void findAllNodesRhs(DWG::Vertex &v, const WG_t &wg);
 
 
   void setFinalState(DWG::Vertex &v, const WG_t &wg);
@@ -100,9 +100,9 @@ namespace DWG {
 
 
 
-  void print(const DWG_t &dwg, const WG_t &wg);
-  void printOutEdges(const DWG::vDesc &v, const DWG_t &dwg, const WG_t &wg);
-  void printOutEdge(const DWG::eDesc &e, const DWG_t &dwg, const WG_t &wg);
+  void print(const DWG_t &dwg);
+  void printOutEdges(const DWG::vDesc &v, const DWG_t &dwg);
+  void printOutEdge(const DWG::eDesc &e, const DWG_t &dwg);
 
 
 }

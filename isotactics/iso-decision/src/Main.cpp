@@ -52,11 +52,11 @@ int main(int argc, char *argv[])
 
 
   DWG_t dwg1 = DWG::createLhs(wg, els1);
-//  DWG::print(dwg1, wg);
+//  DWG::print(dwg1);
 
 
 //  DWG_t dwg2 = DWG::createRhs(wg, els2);
-//  DWG::print(dwg2, wg);
+//  DWG::print(dwg2);
 
 
 

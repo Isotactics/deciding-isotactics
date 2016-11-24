@@ -75,7 +75,7 @@ DWG_t DWG::createLhs(const WG_t &wg, const edgeLabelSet &els)
       for (const WG::vDesc &dst : dsts)
         DWG::addVertexToSet(nv, dst, wg);
 
-      DWG::findAllNodesLhs(nv, dwg, wg);
+      DWG::findAllNodesLhs(nv, wg);
       DWG::setFinalState(nv, wg);
 
       std::cerr << "    current vertex: " << nv.name << " role: " << nv.role << "\n";
@@ -179,7 +179,7 @@ DWG_t DWG::createRhs(const WG_t &wg, const edgeLabelSet &els)
       for (const WG::vDesc &dst : dsts)
         DWG::addVertexToSet(nv, dst, wg);
 
-      DWG::findAllNodesRhs(nv, dwg, wg);
+      DWG::findAllNodesRhs(nv, wg);
       DWG::setFinalState(nv, wg);
 
       std::cerr << "    current vertex: " << nv.name << " role: " << nv.role << "\n";
@@ -475,7 +475,7 @@ bool DWG::destinationsAreSubset(const std::vector<WG::vDesc> dsts, const DWG::Ve
   return true;
 }
 
-void DWG::findAllNodesLhs(DWG::Vertex &v, const DWG_t &dwg, const WG_t &wg)
+void DWG::findAllNodesLhs(DWG::Vertex &v, const WG_t &wg)
 {
   for (const WG::vDesc &start : v.vs) {
     std::cerr << "[findAllNodes] start at " << wg[start].name << "\n";
@@ -541,7 +541,7 @@ void DWG::findAllNodesLhs(DWG::Vertex &v, const DWG_t &dwg, const WG_t &wg)
   return;
 }
 
-void DWG::findAllNodesRhs(DWG::Vertex &v, const DWG_t &dwg, const WG_t &wg)
+void DWG::findAllNodesRhs(DWG::Vertex &v, const WG_t &wg)
 {
   for (const WG::vDesc &start : v.vs) {
     std::cerr << "[findAllNodes] start at " << wg[start].name << "\n";
@@ -648,7 +648,7 @@ void DWG::setFinalState(DWG::Vertex &v, const WG_t &wg)
 
 
 
-void DWG::printOutEdge(const DWG::eDesc &e, const DWG_t &dwg, const WG_t &wg)
+void DWG::printOutEdge(const DWG::eDesc &e, const DWG_t &dwg)
 {
   const DWG::vDesc src = boost::source(e, dwg);
   const DWG::vDesc dst = boost::target(e, dwg);
@@ -673,7 +673,7 @@ void DWG::printOutEdge(const DWG::eDesc &e, const DWG_t &dwg, const WG_t &wg)
 }
 
 
-void DWG::printOutEdges(const DWG::vDesc &v, const DWG_t &dwg, const WG_t &wg)
+void DWG::printOutEdges(const DWG::vDesc &v, const DWG_t &dwg)
 {
   Range<DWG::oeIter> oedges = Util::makeRange(boost::out_edges(v, dwg));
 
@@ -681,7 +681,7 @@ void DWG::printOutEdges(const DWG::vDesc &v, const DWG_t &dwg, const WG_t &wg)
     return;
 
   for (const DWG::eDesc &e : oedges)
-    printOutEdge(e, dwg, wg);
+    printOutEdge(e, dwg);
 
   Util::printLine();
 
@@ -689,7 +689,7 @@ void DWG::printOutEdges(const DWG::vDesc &v, const DWG_t &dwg, const WG_t &wg)
 
 }
 
-void DWG::print(const DWG_t &dwg, const WG_t &wg)
+void DWG::print(const DWG_t &dwg)
 {
 
   std::cout << "digraph {" << std::endl;
@@ -712,7 +712,7 @@ void DWG::print(const DWG_t &dwg, const WG_t &wg)
   Util::printLine();
 
   for (const WG::vDesc &v : vertices)
-    DWG::printOutEdges(v, dwg, wg);
+    DWG::printOutEdges(v, dwg);
 
 
   std::cout << "}" << std::endl;
