@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 
 #include "GraphUtils.hpp"
 #include "Utils.hpp"
@@ -29,6 +30,7 @@ Graph_t Graph::parse(const std::string &path)
 }
 
 
+
 Graph::vDesc Graph::getStart(const Graph_t &g)
 {
   Graph::vDesc start;
@@ -41,6 +43,7 @@ Graph::vDesc Graph::getStart(const Graph_t &g)
 
   return start;
 }
+
 
 std::vector<Graph::vDesc> Graph::getEnds(const Graph_t &g)
 {
@@ -56,9 +59,22 @@ std::vector<Graph::vDesc> Graph::getEnds(const Graph_t &g)
   return res;
 }
 
+
 Range<Graph::oeIter> Graph::getOutEdges(const Graph_t &g, const Graph::vDesc &v)
 {
   return Util::makeRange(boost::out_edges(v, g));
+}
+
+std::vector<Graph::eDesc> Graph::getOutEdgesVec(const Graph_t &g, const Graph::vDesc &v)
+{
+  std::vector<Graph::eDesc> res;
+
+  Range<Graph::oeIter> outEdges = Util::makeRange(boost::out_edges(v, g));
+
+  for (const Graph::eDesc &oe : outEdges)
+    res.push_back(oe);
+
+  return res;
 }
 
 Graph::vDesc Graph::getVertex(const std::string &vName, const Graph_t &g)
@@ -73,7 +89,6 @@ Graph::vDesc Graph::getVertex(const std::string &vName, const Graph_t &g)
 
   return res;
 }
-
 
 Graph::vDesc Graph::getDst(const Graph::vDesc &v, const std::string &l, const Graph_t &g)
 {
@@ -91,6 +106,25 @@ Graph::vDesc Graph::getDst(const Graph::vDesc &v, const std::string &l, const Gr
   return dst;
 }
 
+std::vector<Graph::vDesc>
+Graph::getDestinations(const Graph_t &g, std::vector<Graph::eDesc> edges)
+{
+  std::vector<Graph::vDesc> res;
+
+  for (const Graph::eDesc &e : edges)
+    res.push_back(boost::target(e, g));
+
+  return res;
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -100,6 +134,8 @@ Graph::vDesc Graph::getDst(const Graph::vDesc &v, const std::string &l, const Gr
 
 void Graph::print(const Graph_t &g)
 {
+  std::cout << "digraph {" << std::endl;
+
   Range<Graph::vIter> vertices = Util::makeRange(boost::vertices(g));
 
   for (const Graph::vDesc &v : vertices) {
@@ -118,6 +154,8 @@ void Graph::print(const Graph_t &g)
 
   for (const Graph::vDesc &v : vertices)
     Graph::printOutEdges(g, v);
+
+  std::cout << "}" << std::endl;
 
   return;
 }
@@ -147,8 +185,8 @@ void Graph::printOutEdge(const Graph_t &g, const eDesc &e)
   const Graph::vDesc src = boost::source(e, g);
   const Graph::vDesc dst = boost::target(e, g);
 
-  std::cout << g[src].name << " -> " << g[dst].name;
-  std::cout << " [label=\"" << g[e].label << "\"]" << std::endl;
+  std::cout << "  " << g[src].name << " -> " << g[dst].name;
+  std::cout << " [label=\"" << g[e].label << "\"]" << " gp: " << Alm::groupingToStr(g[e].gp) << std::endl;
 }
 
 void Graph::printOutEdges(const Graph_t &g, const Graph::vDesc &vd) {

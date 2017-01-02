@@ -1,0 +1,313 @@
+#include <algorithm>
+#include <sstream>
+#include <vector>
+
+#include "DetGraph.hpp"
+#include "HelperMaps.hpp"
+
+
+
+DG::Vertex DG::createVertex()
+{
+  DG::Vertex nv;
+
+  return nv;
+}
+
+DG::Vertex DG::createStart()
+{
+  DG::Vertex nv;
+  nv.role = "start";
+
+  return nv;
+}
+
+void DG::addVertexToSet(const Graph::vDesc &gv, DG::Vertex &dgv)
+{
+  (dgv.vs).push_back(gv);
+  std::sort((dgv.vs).begin(), (dgv.vs).end());
+
+  return;
+}
+
+void DG::updateVertexName(DG::Vertex &dgv, const Graph_t &g)
+{
+  std::stringstream name;
+  name << "{";
+
+  std::vector<Graph::vDesc>::iterator it;
+
+  for (it = (dgv.vs).begin(); it != ((dgv.vs).end() - 1); ++it)
+    name << g[*it].name << ", ";
+
+  name << g[*it].name << "}";
+
+  dgv.name = name.str();
+
+  return;
+}
+
+void DG::updateVertexName(DG_t &dg, const DG::vDesc &v, const Graph_t &g)
+{
+  std::stringstream name;
+  name << "{";
+
+  std::vector<Graph::vDesc>::iterator it;
+
+  for (it = (dg[v].vs).begin(); it != ((dg[v].vs).end() - 1); ++it)
+    name << g[*it].name << ", ";
+
+  name << g[*it].name << "}";
+
+  dg[v].name = name.str();
+
+  return;
+}
+
+DG::vDesc DG::addEmptyVertex(DG_t &dg, const edgeLabelSet &els)
+{
+  DG::vDesc nv = boost::add_vertex(dg);
+
+  dg[nv].name = "{}";
+  dg[nv].role = "empty";
+
+  DG::addSelfEdges(dg, nv, els);
+
+  return nv;
+}
+
+void DG::addSelfEdges(DG_t &dg, const DG::vDesc &v, const edgeLabelSet &els)
+{
+  std::vector<label> labels = Helper::elsFlatten(els);
+
+  for (const label &l : labels)
+    addEdge(dg, v, l, v);
+
+  return;
+}
+
+DG::eDesc DG::addEdge(DG_t &dg, const DG::vDesc &src, const label &l, const DG::vDesc &dst)
+{
+  DG::eDesc ne = boost::add_edge(src, dst, dg).first;
+
+  dg[ne].label = l;
+  dg[ne].lowlink = "";
+
+  return ne;
+}
+
+DG::vDesc DG::addVertex(DG_t &dg, const DG::Vertex &v)
+{
+  DG::vDesc nv = boost::add_vertex(dg);
+
+  dg[nv].name = v.name;
+  dg[nv].role = v.role;
+  dg[nv].vs   = v.vs;
+
+  return nv;
+}
+
+std::vector<Graph::eDesc> DG::getOutEdges(const DG_t &dg, const DG::vDesc &v, const Graph_t &g)
+{
+  std::vector<Graph::eDesc> allOutEdges;
+
+  for (const DG::vDesc &gvd : dg[v].vs) {
+    Range<Graph::oeIter> outEdges = Graph::getOutEdges(g, gvd);
+
+    for (const Graph::eDesc &oe : outEdges)
+      allOutEdges.push_back(oe);
+
+  }
+
+  return allOutEdges;
+}
+
+bool DG::hasEdgeForGrouping(const Graph_t &g, const std::vector<Graph::eDesc> &edges, const alignmentGrouping &gp)
+{
+  for (const Graph::eDesc &e : edges) {
+    if (g[e].gp == gp)
+      return true;
+  }
+
+  return false;
+}
+
+std::vector<Graph::eDesc> DG::getEdgesForGrouping(const Graph_t &g, const std::vector<Graph::eDesc> &edges, const alignmentGrouping &gp)
+{
+  std::vector<Graph::eDesc> res;
+
+  for (const Graph::eDesc &e : edges) {
+    if (g[e].gp == gp)
+      res.push_back(e);
+  }
+
+  return res;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void DG::print(const DG_t &g)
+{
+  std::cout << "digraph {" << std::endl;
+
+  Range<DG::vIter> vertices = Util::makeRange(boost::vertices(g));
+
+  for (const DG::vDesc &v : vertices) {
+    if (g[v].role == "start") {
+      std::cout << " \"" << g[v].name << "\" [role=\"start\"]" << std::endl;
+      continue;
+    }
+
+    if (g[v].role == "end") {
+      std::cout << " \"" << g[v].name << "\" [role=\"end\"]" << std::endl;
+      continue;
+    }
+
+    if (g[v].role == "empty") {
+      std::cout << " \"" << g[v].name << "\" [role=\"empty\"]" << std::endl;
+      continue;
+    }
+  }
+
+  Util::printLine();
+
+  for (const DG::vDesc &v : vertices)
+    DG::printOutEdges(g, v);
+
+  std::cout << "}" << std::endl;
+
+  return;
+}
+
+void DG::printVertices(const DG_t &g)
+{
+  const Range<DG::vIter> vertices = Util::makeRange(boost::vertices(g));
+
+  for (const DG::vDesc &v : vertices)
+    std::cout << g[v].name << std::endl;
+
+  return;
+}
+
+void DG::printEdges(const DG_t &g)
+{
+  const Range<DG::eIter> edges = Util::makeRange(boost::edges(g));
+
+  for (const DG::eDesc &e : edges)
+    std::cout << g[e].label << std::endl;
+
+  return;
+}
+
+void DG::printOutEdge(const DG_t &g, const eDesc &e)
+{
+  const DG::vDesc src = boost::source(e, g);
+  const DG::vDesc dst = boost::target(e, g);
+
+  std::cout << "  " << g[src].name << " -> " << g[dst].name;
+  std::cout << " [label=\"" << g[e].label << "\"]" << std::endl;
+}
+
+void DG::printOutEdges(const DG_t &g, const DG::vDesc &vd) {
+
+  const Range<DG::oeIter> outEdges = Util::makeRange(boost::out_edges(vd, g));
+
+  if (outEdges.empty())
+    return;
+
+  for (const DG::eDesc &e : outEdges)
+    DG::printOutEdge(g, e);
+
+  return;
+}
+
+
+
+
+/*
+
+Graph::Vertex Graph::createVertex()
+{
+  Graph::Vertex nv;
+  return nv;
+}
+
+
+Graph::Vertex Graph::createVertex(const Graph_t &g, const Graph::vDesc &v)
+{
+  Graph::Vertex nv;
+  nv.name = g[v].name;
+  nv.role = g[v].role;
+
+  return nv;
+}
+
+
+
+
+
+Graph::vDesc Graph::addVertex(Graph_t &g, const Graph::Vertex &v)
+{
+  Graph::vDesc nv = boost::add_vertex(g);
+
+  g[nv].name = v.name;
+  g[nv].role = v.role;
+  //g[nv].vs = v.vs;
+
+  return nv;
+}
+
+
+void Graph::addVertexToSet(const Graph::vDesc &vd, Graph::Vertex &v)
+{
+  (v.vs).push_back(vd);
+
+  return;
+}
+
+
+void Graph::addVertexToSet(const Graph_t &g, const Graph::vDesc &vd, Graph::Vertex &v)
+{
+  std::cout << "vd: " << vd << "\n";
+
+  (v.vs).push_back(vd);
+  std::sort(v.vs.begin(), v.vs.end());
+
+  Graph::updateVertexName(g, v);
+
+  return;
+}
+
+
+
+
+
+
+
+std::vector<Graph::eDesc> Graph::getOutEdges(const Graph_t &g, const Graph::Vertex &v)
+{
+  std::vector<Graph::eDesc> oedges;
+
+  for (const Graph::vDesc &gv : v.vs) {
+    Range<Graph::oeIter> oes = Util::makeRange(boost::out_edges(gv, g));
+
+    for (const Graph::eDesc &e : oes)
+      oedges.push_back(e);
+  }
+
+  return oedges;
+}
+
+*/

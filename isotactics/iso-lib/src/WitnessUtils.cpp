@@ -25,8 +25,8 @@ WG::vDesc createStart(WG_t &wg, const Graph_t &g1, const Graph_t &g2)
 
 WG_t WG::create(const Graph_t &g1, const Graph_t &g2, const alignment &alm)
 {
-  labelGroupingMap lgm1 = Alm::LabelGroupingMap(g1, Alm::Lhs(alm));
-  labelGroupingMap lgm2 = Alm::LabelGroupingMap(g2, Alm::Rhs(alm));
+  labelGroupingMap lgm1 = Helper::LabelGroupingMap(g1, Alm::Lhs(alm));
+  labelGroupingMap lgm2 = Helper::LabelGroupingMap(g2, Alm::Rhs(alm));
 
   WG_t wg;
   matchSet ms, msNew;
@@ -72,7 +72,8 @@ WG_t WG::create(const Graph_t &g1, const Graph_t &g2, const alignment &alm)
 
     std::cerr << "  checking rule 1:" << std::endl;
 
-    for (const WG::eDesc &e1 : oe1) {
+    for (const Graph::eDesc &e1 : oe1) {
+
       l1 = g1[e1].label;
 
       for (const WG::eDesc &e2 : oe2) {

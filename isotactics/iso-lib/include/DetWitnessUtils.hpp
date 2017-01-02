@@ -8,6 +8,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/range/iterator_range.hpp>
 
+#include "HelperMaps.hpp"
 #include "WitnessUtils.hpp"
 #include "Utils.hpp"
 
@@ -34,10 +35,10 @@ using DWG_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
 
 namespace DWG {
   struct Vertex {
-  std::string name;
-  std::string role;
+    std::string name;
+    std::string role;
 
-  std::vector<WG::vDesc> vs;
+    std::vector<WG::vDesc> vs;
   };
 
   using vDesc = DWG_t::vertex_descriptor;

@@ -28,6 +28,10 @@
 
 
 
+
+
+
+
 int main(int argc, char *argv[])
 {
   if (argc != 4) {
@@ -40,12 +44,14 @@ int main(int argc, char *argv[])
 
   alignment alm = Alm::parse(argv[3]);
 
-  labelGroupingMap lgm1 = Alm::LabelGroupingMap(g1, Alm::Lhs(alm));
-  labelGroupingMap lgm2 = Alm::LabelGroupingMap(g2, Alm::Rhs(alm));
+  labelGroupingMap lgm1 = Helper::LabelGroupingMap(g1, Alm::Lhs(alm));
+  labelGroupingMap lgm2 = Helper::LabelGroupingMap(g2, Alm::Rhs(alm));
 
-  edgeLabelSet els1 = Alm::lgmFlatten(lgm1);
-  edgeLabelSet els2 = Alm::lgmFlatten(lgm2);
+  edgeLabelSet els1 = Helper::lgmFlatten(lgm1);
+  edgeLabelSet els2 = Helper::lgmFlatten(lgm2);
 
+
+  Helper::printLgm(lgm1);
 
   WG_t wg = WG::create(g1, g2, alm);
   //WG::print(wg);
@@ -59,15 +65,12 @@ int main(int argc, char *argv[])
 //  DWG::print(dwg2);
 
 
-
-
   //g1[0].role = "end";
 
   std::cout << "g1 vs dwgLhs: " << Cmp::isEqual(g1, dwg1, lgm1) << std::endl;
 
 
 //  std::cout << "g2 vs dwgRhs: " << isEqual(g2, dwg2, lgm2) << std::endl;
-
 
 
 

@@ -9,7 +9,9 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/range/iterator_range.hpp>
 
+#include "AlignmentUtils.hpp"
 #include "Utils.hpp"
+
 
 
 struct VerticeProps {
@@ -19,6 +21,8 @@ struct VerticeProps {
 
 struct EdgeProps {
   std::string label;
+  alignmentGrouping gp;
+
   std::string lowlink;
 };
 
@@ -31,6 +35,7 @@ using Graph_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS
 
 
 namespace Graph {
+
   using vDesc = Graph_t::vertex_descriptor;
   using eDesc = Graph_t::edge_descriptor;
 
@@ -46,13 +51,32 @@ namespace Graph {
 
   Graph_t parse(const std::string &path);
 
+  //Graph::Vertex createVertex();
+  //Graph::Vertex createVertex(const Graph_t &g, const Graph::vDesc &v);
+
+  //Graph::vDesc addEmptyVertex(Graph_t &g);
+  //Graph::vDesc addVertex(Graph_t &g, const Graph::Vertex &v);
+
+  //void addVertexToSet(const Graph::vDesc &vd, Graph::Vertex &v);
+  //void addVertexToSet(const Graph_t &g, const Graph::vDesc &vd, Graph::Vertex &v);
+  //void updateVertexName(const Graph_t &g, Graph::Vertex &v);
+
+  //Graph::eDesc addEdge(const Graph::vDesc &src, const alignmentGrouping &gp, const Graph::vDesc &dst, Graph_t &g);
+
   Graph::vDesc getStart(const Graph_t &g);
   std::vector<Graph::vDesc> getEnds(const Graph_t &g);
 
   Range<Graph::oeIter> getOutEdges(const Graph_t &g, const Graph::vDesc &v);
-  Graph::vDesc getVertex(const std::string &vName, const Graph_t &g);
+  std::vector<Graph::eDesc> getOutEdgesVec(const Graph_t &g, const Graph::vDesc &v);
 
+  Graph::vDesc getVertex(const std::string &vName, const Graph_t &g);
   Graph::vDesc getDst(const Graph::vDesc &v, const std::string &l, const Graph_t &g);
+
+
+  std::vector<Graph::vDesc> getDestinations(const Graph_t &g, std::vector<Graph::eDesc> edges);
+
+
+
 
 
 

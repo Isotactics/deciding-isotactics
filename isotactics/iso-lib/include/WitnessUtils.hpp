@@ -10,6 +10,7 @@
 
 #include "AlignmentUtils.hpp"
 #include "GraphUtils.hpp"
+#include "HelperMaps.hpp"
 #include "MatchUtils.hpp"
 #include "Utils.hpp"
 

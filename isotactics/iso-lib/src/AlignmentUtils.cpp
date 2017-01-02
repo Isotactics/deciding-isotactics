@@ -76,65 +76,6 @@ almMap Alm::AlmMap(const alignment &alm)
   return m;
 }
 
-labelGroupingMap Alm::LabelGroupingMap(const Graph_t &g, const alignmentHalf &alh)
-{
-  labelGroupingMap lgm;
-
-  const Range<Graph::eIter> edges = Util::makeRange(boost::edges(g));
-
-  label l;
-  alignmentGrouping gp;
-
-  for (const Graph::eDesc &e : edges) {
-    l = g[e].label;
-    gp = Alm::getGrouping(l, alh);
-
-    lgm[l] = gp;
-  }
-
-  return lgm;
-}
-
-labelAlmSubMap Alm::LabelAlmSubMap(const Graph_t &g, const alignment &alm)
-{
-  labelAlmSubMap lsm;
-
-  const Range<Graph::eIter> edges = Util::makeRange(boost::edges(g));
-
-  label l;
-  alignmentSub almSub;
-
-  for (const Graph::eDesc &e : edges) {
-    l = g[e].label;
-
-    for (const alignmentPair &p : alm) {
-
-      if ((Alm::hasLabel(p.first, l)) || (Alm::hasLabel(p.second, l)))
-        almSub.push_back(p);
-
-    }
-
-    lsm[l] = almSub;
-    almSub.clear();
-  }
-
-  return lsm;
-
-}
-
-edgeLabelSet Alm::lgmFlatten(const labelGroupingMap &lgm)
-{
-  edgeLabelSet els;
-
-  for (const std::pair<label, alignmentGrouping> &p : lgm)
-    els.insert(p.second);
-
-  //alignmentGrouping empty;
-  //els.insert(empty);
-
-  return els;
-}
-
 bool Alm::hasLabel(const alignmentGroup &g, const label &l)
 {
   alignmentGroup::const_iterator it;
@@ -177,6 +118,11 @@ alignmentGrouping Alm::getGrouping(const label &l, const alignmentHalf &alh)
   }
 
   return res;
+}
+
+label Alm::getLabelFromGrouping(const alignmentGrouping &gp)
+{
+  return gp[0][0];
 }
 
 std::string Alm::groupToStr(const alignmentGroup &g)
@@ -279,34 +225,4 @@ void Alm::printAlmMap(const almMap &m)
   return;
 }
 
-void Alm::printLgm(const labelGroupingMap &lgm)
-{
-  for (const std::pair<label, alignmentGrouping> &p : lgm) {
-    std::cout << p.first << " ->  ";
-    Alm::printGrouping(p.second);
-    Util::printLine();
-  }
 
-  return;
-}
-
-void Alm::printLsm(const labelAlmSubMap &lsm)
-{
-  for (const std::pair<label, alignmentSub> &p : lsm) {
-    std::cout << p.first << " -> " << std::endl;
-    Alm::print(p.second);
-    Util::printLine();
-  }
-
-  return;
-}
-
-void Alm::printEls(const edgeLabelSet &els)
-{
-  for (const alignmentGrouping &gp : els) {
-    Alm::printGrouping(gp);
-    Util::printLine();
-  }
-
-  return;
-}

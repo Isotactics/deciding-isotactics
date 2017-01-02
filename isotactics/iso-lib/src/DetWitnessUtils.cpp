@@ -4,8 +4,6 @@
 #include "DetWitnessUtils.hpp"
 #include "WitnessUtils.hpp"
 
-
-
 DWG_t DWG::createLhs(const WG_t &wg, const edgeLabelSet &els)
 {
   DWG_t dwg;
@@ -714,11 +712,7 @@ void DWG::print(const DWG_t &dwg)
   for (const WG::vDesc &v : vertices)
     DWG::printOutEdges(v, dwg);
 
-
   std::cout << "}" << std::endl;
 
   return;
-
-  return;
 }
-
