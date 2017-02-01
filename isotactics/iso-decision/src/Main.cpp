@@ -50,10 +50,17 @@ int main(int argc, char *argv[])
   edgeLabelSet els1 = Helper::lgmFlatten(lgm1);
   edgeLabelSet els2 = Helper::lgmFlatten(lgm2);
 
+  Helper::labelsToGroupings(g1, lgm1);
+  Helper::labelsToGroupings(g2, lgm2);
 
-  Helper::printLgm(lgm1);
+  DG_t dg1 = DG::determinize(g1, els1);
+  DG_t dg2 = DG::determinize(g2, els2);
 
-  WG_t wg = WG::create(g1, g2, alm);
+
+
+
+
+  WG_t wg = WG::create(dg1, dg2, lgm1, lgm2, alm);
   //WG::print(wg);
 
 

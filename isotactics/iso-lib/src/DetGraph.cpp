@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <sstream>
+#include <string>
 #include <vector>
 
 #include "DetGraph.hpp"
@@ -7,9 +8,74 @@
 
 
 
+DG_t DG::determinize(const Graph_t &g, const edgeLabelSet &els)
+{
+  DG_t dg;
+
+  Graph::vDesc gStart = Graph::getStart(g);
+  DG::Vertex dgStart = DG::createStart();
+
+  DG::addVertexToSet(gStart, dgStart);
+  DG::updateVertexName(dgStart, g);
+
+  DG::vDesc dgStartvd = DG::addVertex(dg, dgStart);
+
+  std::deque<DG::vDesc> dgTodo;
+  dgTodo.push_back(dgStartvd);
+
+  while (!dgTodo.empty()) {
+
+    DG::vDesc curr = dgTodo.front();
+    dgTodo.pop_front();
+
+    std::vector<Graph::eDesc> outEdges = DG::getOutEdges(dg, curr, g);
+
+    for (const alignmentGrouping &gp : els) {
+      label l = Alm::getLabelFromGrouping(gp);
+
+      if (!DG::hasEdgeForGrouping(g, outEdges, gp))
+        continue;
+
+      std::vector<Graph::eDesc> edges = DG::getEdgesForGrouping(g, outEdges, gp);
+      std::vector<Graph::vDesc> dsts = Graph::getDestinations(g, edges);
+
+      DG::Vertex nv = DG::createVertex(dsts, g);
+      DG::updateVertexName(nv, g);
+
+      if (DG::hasVertex(dg, nv)) {
+        DG::vDesc existingDst = DG::getVertexByName(dg, nv.name);
+        DG::addEdge(dg, curr, l, existingDst);
+
+        continue;
+      }
+
+      DG::vDesc nvd = DG::addVertex(dg, nv);
+      DG::addEdge(dg, curr, l, nvd);
+
+      dgTodo.push_back(nvd);
+    }
+  }
+
+  return dg;
+}
+
 DG::Vertex DG::createVertex()
 {
   DG::Vertex nv;
+
+  return nv;
+}
+
+DG::Vertex DG::createVertex(const std::vector<Graph::vDesc> &vertices, const Graph_t &g)
+{
+  DG::Vertex nv;
+
+  for (const Graph::vDesc &v : vertices) {
+    DG::addVertexToSet(v, nv);
+
+    if (Graph::isFinalState(g, v))
+      nv.role = "end";
+  }
 
   return nv;
 }
@@ -20,6 +86,46 @@ DG::Vertex DG::createStart()
   nv.role = "start";
 
   return nv;
+}
+
+DG::vDesc DG::getStart(const DG_t &dg)
+{
+  DG::vDesc res;
+
+  const Range<DG::vIter> vertices = Util::makeRange(boost::vertices(dg));
+
+  for (const DG::vDesc &vd : vertices) {
+    if (dg[vd].role == "start")
+      res =  vd;
+  }
+
+  return res;
+}
+
+bool DG::hasVertex(const DG_t &dg, const DG::Vertex &v)
+{
+  const Range<DG::vIter> vertices = Util::makeRange(boost::vertices(dg));
+
+  for (const DG::vDesc &vd : vertices) {
+    if (dg[vd].name == v.name)
+      return true;
+  }
+
+  return false;
+}
+
+DG::vDesc DG::getVertexByName(const DG_t &dg, const std::string &name)
+{
+  DG::vDesc res;
+
+  const Range<DG::vIter> vertices = Util::makeRange(boost::vertices(dg));
+
+  for (const DG::vDesc &vd : vertices) {
+    if (dg[vd].name == name)
+      res =  vd;
+  }
+
+  return res;
 }
 
 void DG::addVertexToSet(const Graph::vDesc &gv, DG::Vertex &dgv)
@@ -186,7 +292,7 @@ void DG::print(const DG_t &g)
   for (const DG::vDesc &v : vertices)
     DG::printOutEdges(g, v);
 
-  std::cout << "}" << std::endl;
+  std::cout << "}\n\n" << std::endl;
 
   return;
 }

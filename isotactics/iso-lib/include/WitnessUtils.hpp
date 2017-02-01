@@ -9,7 +9,7 @@
 #include <boost/range/iterator_range.hpp>
 
 #include "AlignmentUtils.hpp"
-#include "GraphUtils.hpp"
+#include "DetGraph.hpp"
 #include "HelperMaps.hpp"
 #include "MatchUtils.hpp"
 #include "Utils.hpp"
@@ -62,7 +62,8 @@ namespace WG {
   using oeIter = WG_t::out_edge_iterator;
   using oeIterPair = std::pair<oeIter, oeIter>;
 
-  WG_t create(const Graph_t &g1, const Graph_t &g2, const alignment &alm);
+  WG_t create(const DG_t &g1, const DG_t &g2, labelGroupingMap &lgm1,
+              labelGroupingMap &lgm2, const alignment &alm);
 
   WG::Vertex createVertex(const vName &v1, const vName &v2, const matchSet &ms);
   WG::vDesc getVertex(const WG::Vertex &v, const WG_t &wg);

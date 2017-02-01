@@ -7,13 +7,13 @@
 
 
 
-WG::vDesc createStart(WG_t &wg, const Graph_t &g1, const Graph_t &g2)
+WG::vDesc createStart(WG_t &wg, const DG_t &g1, const DG_t &g2)
 {
   matchSet ms;
   WG::vDesc wgInit;
 
-  Graph::vDesc gs1 = Graph::getStart(g1);
-  Graph::vDesc gs2 = Graph::getStart(g2);
+  DG::vDesc gs1 = DG::getStart(g1);
+  DG::vDesc gs2 = DG::getStart(g2);
 
   WG::Vertex init = WG::createVertex(g1[gs1].name, g2[gs2].name, ms);
   init.role = "start";
@@ -23,11 +23,9 @@ WG::vDesc createStart(WG_t &wg, const Graph_t &g1, const Graph_t &g2)
   return wgInit;
 }
 
-WG_t WG::create(const Graph_t &g1, const Graph_t &g2, const alignment &alm)
+WG_t WG::create(const DG_t &g1, const DG_t &g2, labelGroupingMap &lgm1,
+                labelGroupingMap &lgm2, const alignment &alm)
 {
-  labelGroupingMap lgm1 = Helper::LabelGroupingMap(g1, Alm::Lhs(alm));
-  labelGroupingMap lgm2 = Helper::LabelGroupingMap(g2, Alm::Rhs(alm));
-
   WG_t wg;
   matchSet ms, msNew;
 
@@ -35,10 +33,10 @@ WG_t WG::create(const Graph_t &g1, const Graph_t &g2, const alignment &alm)
 
   WG::vDesc wgv1, wgv2;
 
-  Graph::vDesc gv1, gv2;
-  Graph::vDesc dst1, dst2;
+  DG::vDesc gv1, gv2;
+  DG::vDesc dst1, dst2;
 
-  Range<Graph::oeIter> oe1, oe2;
+  Range<DG::oeIter> oe1, oe2;
 
   WG::Vertex init, currentV;
   std::deque<WG::vDesc> wgTodo;
@@ -55,8 +53,8 @@ WG_t WG::create(const Graph_t &g1, const Graph_t &g2, const alignment &alm)
     wgv1 = wgTodo.front();
     wgTodo.pop_front();
 
-    gv1 = Graph::getVertex(wg[wgv1].v1Name, g1);
-    gv2 = Graph::getVertex(wg[wgv1].v2Name, g2);
+    gv1 = DG::getVertexByName(g1, wg[wgv1].v1Name);
+    gv2 = DG::getVertexByName(g2, wg[wgv1].v2Name);
 
     oe1 = Util::makeRange(boost::out_edges(gv1, g1));
     oe2 = Util::makeRange(boost::out_edges(gv2, g2));
@@ -72,7 +70,7 @@ WG_t WG::create(const Graph_t &g1, const Graph_t &g2, const alignment &alm)
 
     std::cerr << "  checking rule 1:" << std::endl;
 
-    for (const Graph::eDesc &e1 : oe1) {
+    for (const DG::eDesc &e1 : oe1) {
 
       l1 = g1[e1].label;
 

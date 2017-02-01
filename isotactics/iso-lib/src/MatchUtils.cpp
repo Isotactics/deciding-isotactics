@@ -67,21 +67,10 @@ match Match::getMatch(const alignment &alm, const label &l1, const label &l2)
   match m;
   matchSet res;
 
-  std::cout << "getMatch() l1: " << l1 << " l2: " << l2 << "\n";
-
   typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
 
   boost::char_separator<char> sep{" | "};
   tokenizer tok{l2, sep};
-
-  for (const std::string &t : tok)
-    std::cout << t << '\n';
-
-
-
-
-
-
 
   for (const alignmentPair &p : alm) {
     if ((Alm::hasLabel(p.first, l1)) && (Alm::hasLabel(p.second, l2)))

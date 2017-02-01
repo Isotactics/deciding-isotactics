@@ -2,6 +2,7 @@
 #define __DETGRAPHUTILS_HPP__
 
 #include <string>
+#include <vector>
 
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/adjacency_list.hpp>
@@ -50,17 +51,23 @@ namespace DG {
   using oeIter = DG_t::out_edge_iterator;
   using oeIterPair = std::pair<oeIter, oeIter>;
 
+  DG_t determinize(const Graph_t &g, const edgeLabelSet &els);
 
   DG::Vertex createVertex();
-  DG::Vertex createVertex(//dsts list)
+  DG::Vertex createVertex(const std::vector<Graph::vDesc> &vertices, const Graph_t &g);
 
   DG::Vertex createStart();
+  DG::vDesc getStart(const DG_t &dg);
+
+
+  bool hasVertex(const DG_t &dg, const DG::Vertex &v);
+  DG::vDesc getVertexByName(const DG_t &dg, const std::string &name);
+
 
   void addVertexToSet(const Graph::vDesc &gv, DG::Vertex &dg);
 
   void updateVertexName(DG::Vertex &dgv, const Graph_t &g);
   void updateVertexName(DG_t &dg, const DG::vDesc &v, const Graph_t &g);
-
 
   DG::vDesc addEmptyVertex(DG_t &dg, const edgeLabelSet &els);
   void addSelfEdges(DG_t &dg, const DG::vDesc &v, const edgeLabelSet &els);

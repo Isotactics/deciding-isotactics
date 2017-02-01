@@ -22,8 +22,8 @@ namespace Helper {
   edgeLabelSet lgmFlatten(const labelGroupingMap &lgm);
   std::vector<label> elsFlatten(const edgeLabelSet &els);
 
-
   void labelsToGroupings(Graph_t &g, labelGroupingMap &lgm);
+
 
 
 

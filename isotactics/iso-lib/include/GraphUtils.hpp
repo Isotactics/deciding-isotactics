@@ -51,17 +51,7 @@ namespace Graph {
 
   Graph_t parse(const std::string &path);
 
-  //Graph::Vertex createVertex();
-  //Graph::Vertex createVertex(const Graph_t &g, const Graph::vDesc &v);
-
-  //Graph::vDesc addEmptyVertex(Graph_t &g);
-  //Graph::vDesc addVertex(Graph_t &g, const Graph::Vertex &v);
-
-  //void addVertexToSet(const Graph::vDesc &vd, Graph::Vertex &v);
-  //void addVertexToSet(const Graph_t &g, const Graph::vDesc &vd, Graph::Vertex &v);
-  //void updateVertexName(const Graph_t &g, Graph::Vertex &v);
-
-  //Graph::eDesc addEdge(const Graph::vDesc &src, const alignmentGrouping &gp, const Graph::vDesc &dst, Graph_t &g);
+  bool isFinalState(const Graph_t &g, const Graph::vDesc &vd);
 
   Graph::vDesc getStart(const Graph_t &g);
   std::vector<Graph::vDesc> getEnds(const Graph_t &g);
@@ -71,7 +61,6 @@ namespace Graph {
 
   Graph::vDesc getVertex(const std::string &vName, const Graph_t &g);
   Graph::vDesc getDst(const Graph::vDesc &v, const std::string &l, const Graph_t &g);
-
 
   std::vector<Graph::vDesc> getDestinations(const Graph_t &g, std::vector<Graph::eDesc> edges);
 

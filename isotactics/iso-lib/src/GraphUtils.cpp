@@ -29,7 +29,10 @@ Graph_t Graph::parse(const std::string &path)
   return g;
 }
 
-
+bool Graph::isFinalState(const Graph_t &g, const Graph::vDesc &vd)
+{
+  return (g[vd].role == "end");
+}
 
 Graph::vDesc Graph::getStart(const Graph_t &g)
 {
@@ -155,7 +158,7 @@ void Graph::print(const Graph_t &g)
   for (const Graph::vDesc &v : vertices)
     Graph::printOutEdges(g, v);
 
-  std::cout << "}" << std::endl;
+  std::cout << "}\n\n" << std::endl;
 
   return;
 }
