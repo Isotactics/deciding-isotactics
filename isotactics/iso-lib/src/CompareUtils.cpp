@@ -3,9 +3,9 @@
 
 #include "CompareUtils.hpp"
 
-bool Cmp::isExitCondition(const Cmp::VertexPair &v, const Graph_t &g, const DWG_t &dwg)
+bool Cmp::isExitCondition(const Cmp::VertexPair &v, const DG_t &g, const DWG_t &dwg)
 {
-  Graph::vDesc gv = v.gv;
+  DG::vDesc gv = v.gv;
   DWG::vDesc dwgv = v.dwgv;
 
   if ((g[gv].role == "end") && (dwg[dwgv].role != "end"))
@@ -25,9 +25,9 @@ bool Cmp::alreadyVisited(const Cmp::Vertex &v, std::vector<Cmp::Vertex> visited)
   return false;
 }
 
-bool Cmp::isEqual(const Graph_t &g, const DWG_t &dwg, const labelGroupingMap &lgm) {
+bool Cmp::isEqual(const DG_t &g, const DWG_t &dwg, const labelGroupingMap &lgm) {
 
-  Graph::vDesc gStart = Graph::getStart(g);
+  DG::vDesc gStart = DG::getStart(g);
   DWG::vDesc dwgStart = DWG::getStart(dwg);
 
   Cmp::Vertex start(gStart, dwgStart);
@@ -49,19 +49,19 @@ bool Cmp::isEqual(const Graph_t &g, const DWG_t &dwg, const labelGroupingMap &lg
 
     visited.push_back(curr);
 
-    Graph::vDesc gv = curr.pair.gv;
+    DG::vDesc gv = curr.pair.gv;
     DWG::vDesc dwgv = curr.pair.dwgv;
 
     std::cerr << "working on: " << Cmp::vpToString(curr.pair, g, dwg) << std::endl;
 
-    Range<Graph::oeIter> oes = Graph::getOutEdges(g, gv);
+    Range<DG::oeIter> oes = DG::getOutEdges(g, gv);
 
-    for (const Graph::eDesc &e : oes) {
+    for (const DG::eDesc &e : oes) {
 
       label l = g[e].label;
       std::cerr << "  checking label " << l << std::endl;
 
-      Graph::vDesc gDst = Graph::getDst(gv, l, g);
+      DG::vDesc gDst = DG::getDst(gv, l, g);
       DWG::vDesc dwgDst = DWG::getDst(dwgv, lgm.find(l)->second, dwg);
 
       Cmp::Vertex dst(gDst, dwgDst);
@@ -106,9 +106,9 @@ void Cmp::inheritPath(Cmp::Vertex &v, const Cmp::Vertex &vpath)
   v.path.push_back(vpath.pair);
 }
 
-std::string Cmp::vpToString(const Cmp::VertexPair &vp, const Graph_t &g, const DWG_t &dwg)
+std::string Cmp::vpToString(const Cmp::VertexPair &vp, const DG_t &g, const DWG_t &dwg)
 {
-  Graph::vDesc gv = vp.gv;
+  DG::vDesc gv = vp.gv;
   DWG::vDesc dwgv = vp.dwgv;
 
   std::string res = "";
@@ -119,7 +119,7 @@ std::string Cmp::vpToString(const Cmp::VertexPair &vp, const Graph_t &g, const D
   return res;
 }
 
-std::string Cmp::vertexToString(const Cmp::Vertex &v, const Graph_t &g, const DWG_t &dwg)
+std::string Cmp::vertexToString(const Cmp::Vertex &v, const DG_t &g, const DWG_t &dwg)
 {
   std::string res = Cmp::vpToString(v.pair, g, dwg);
 

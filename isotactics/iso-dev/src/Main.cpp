@@ -45,20 +45,15 @@ int main(int argc, char *argv[])
 
 
   WG_t wg = WG::create(dg1, dg2, lgm1, lgm2, alm);
-  WG::print(wg);
+  //WG::print(wg);
 
   DWG_t dwg1 = DWG::createLhs(wg, els1);
-  DWG::print(dwg1);
+  //DWG::print(dwg1);
 
+  DWG_t dwg2 = DWG::createRhs(wg, els2);
 
-
-
-
-
-
-
-  std::cout << "g1 vs dwgLhs: " << Cmp::isEqual(g1, dwg1, lgm1) << std::endl;
-  //std::cout << "g2 vs dwgRhs: " << Cmp::isEqual(g2, dwg2, lgm2) << std::endl;
+  std::cout << "g1 vs dwgLhs: " << Cmp::isEqual(dg1, dwg1, lgm1) << std::endl;
+  std::cout << "g2 vs dwgRhs: " << Cmp::isEqual(dg2, dwg2, lgm2) << std::endl;
 
 
 

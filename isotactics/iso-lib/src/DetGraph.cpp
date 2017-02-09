@@ -228,6 +228,11 @@ std::vector<Graph::eDesc> DG::getOutEdges(const DG_t &dg, const DG::vDesc &v, co
   return allOutEdges;
 }
 
+Range<DG::oeIter> DG::getOutEdges(const DG_t &g, const DG::vDesc &v)
+{
+  return Util::makeRange(boost::out_edges(v, g));
+}
+
 bool DG::hasEdgeForGrouping(const Graph_t &g, const std::vector<Graph::eDesc> &edges, const alignmentGrouping &gp)
 {
   for (const Graph::eDesc &e : edges) {
@@ -250,7 +255,21 @@ std::vector<Graph::eDesc> DG::getEdgesForGrouping(const Graph_t &g, const std::v
   return res;
 }
 
+DG::vDesc DG::getDst(const DG::vDesc &v, const std::string &l, const DG_t &g)
+{
+  DG::vDesc dst;
 
+  Range<DG::oeIter> oes = DG::getOutEdges(g, v);
+
+  for (const DG::eDesc &e : oes) {
+    if (g[e].label == l) {
+      dst = boost::target(e, g);
+      break;
+    }
+  }
+
+  return dst;
+}
 
 
 
