@@ -46,6 +46,8 @@ namespace Alm {
   label getLabelFromGrouping(const alignmentGrouping &gp);
   alignmentGrouping getGrouping(const label &l, const alignmentHalf &alh);
 
+  int getPermissiveness(const alignment &alm);
+
 
 
 

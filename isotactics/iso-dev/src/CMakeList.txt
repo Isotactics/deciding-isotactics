@@ -1,0 +1,4 @@
+cmake_minimum_required (VERSION 2.6)
+
+project (LoopDetection)
+add_executable(LoopDetection loop_detect.cpp)

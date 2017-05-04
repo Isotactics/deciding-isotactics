@@ -43,17 +43,24 @@ int main(int argc, char *argv[])
   DG_t dg1 = DG::determinize(g1, els1);
   DG_t dg2 = DG::determinize(g2, els2);
 
+  std::cout << "Permissiveness: " << Helper::maxPermissiveness(alm) << "\n";
+  std::cout << "Complexity:     " << Helper::maxComplexity(alm) << "\n";
+  std::cout << "Norm:           " << Helper::alignmentNorm(alm) << "\n";
 
-  WG_t wg = WG::create(dg1, dg2, lgm1, lgm2, alm);
+
+
+
+
+  //WG_t wg = WG::create(dg1, dg2, lgm1, lgm2, alm);
   //WG::print(wg);
 
-  DWG_t dwg1 = DWG::createLhs(wg, els1);
+  //DWG_t dwg1 = DWG::createLhs(wg, els1);
   //DWG::print(dwg1);
 
-  DWG_t dwg2 = DWG::createRhs(wg, els2);
+  //DWG_t dwg2 = DWG::createRhs(wg, els2);
 
-  std::cout << "g1 vs dwgLhs: " << Cmp::isEqual(dg1, dwg1, lgm1) << std::endl;
-  std::cout << "g2 vs dwgRhs: " << Cmp::isEqual(dg2, dwg2, lgm2) << std::endl;
+  //std::cout << "g1 vs dwgLhs: " << Cmp::isEqual(dg1, dwg1, lgm1) << std::endl;
+  //std::cout << "g2 vs dwgRhs: " << Cmp::isEqual(dg2, dwg2, lgm2) << std::endl;
 
 
 
