@@ -33,6 +33,14 @@ int main(int argc, char *argv[])
     return 0;
   }
 
+  std::ofstream error("error.txt");
+
+
+
+ // redirect cerr:
+ std::cerr.rdbuf(0);
+
+
   Graph_t g1 = Graph::parse(argv[1]);
   Graph_t g2 = Graph::parse(argv[2]);
 
