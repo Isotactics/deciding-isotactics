@@ -450,10 +450,7 @@ std::vector<WG::eDesc> WG::getEmptyEdgesRhs(const Range<WG::oeIter> &oes, const 
 
 
 
-
-
-
-void WG::printOutEdge(const WG_t &wg, const WG::eDesc &e)
+void WG::writeOutEdge(const WG_t &wg, const WG::eDesc &e, std::ostream& target)
 {
   const WG::vDesc src = boost::source(e, wg);
   const WG::vDesc dst = boost::target(e, wg);
@@ -479,13 +476,13 @@ void WG::printOutEdge(const WG_t &wg, const WG::eDesc &e)
 
   label << "}";
 
-  std::cout << "  \"" << wg[src].name << "\" ->  \"" << wg[dst].name << "\"";
-  std::cout << " [label=\"" << label.str() << "\", gp1=\"" << gp1 << "\", gp2=\"" << gp2 <<"\"]" << std::endl;
+  target << "  \"" << wg[src].name << "\" ->  \"" << wg[dst].name << "\"";
+  target << " [label=\"" << label.str() << "\", gp1=\"" << gp1 << "\", gp2=\"" << gp2 <<"\"]" << std::endl;
 
   return;
 }
 
-void WG::printOutEdges(const WG_t &wg, const WG::vDesc &v)
+void WG::writeOutEdges(const WG_t &wg, const WG::vDesc &v, std::ostream& target)
 {
   Range<WG::oeIter> oedges = Util::makeRange(boost::out_edges(v, wg));
 
@@ -493,41 +490,48 @@ void WG::printOutEdges(const WG_t &wg, const WG::vDesc &v)
     return;
 
   for (const WG::eDesc &e : oedges)
-    printOutEdge(wg, e);
+    writeOutEdge(wg, e, target);
 
-  Util::printLine();
+  Util::printLineFile(target);
 
   return;
 }
 
-void WG::print(const WG_t &wg)
+void WG::write(const WG_t &wg, std::ostream& target)
 {
-  std::cout << "digraph {" << std::endl;
+  target << "digraph {" << std::endl;
 
   Range<WG::vIter> vertices = Util::makeRange(boost::vertices(wg));
 
   for (const WG::vDesc &v : vertices) {
 
     if (wg[v].role == "start") {
-      std::cout << "  \"" << wg[v].name << "\" [role=\"start\"]" << std::endl;
+      target << "  \"" << wg[v].name << "\" [role=\"start\"]" << std::endl;
       continue;
     }
 
     if (wg[v].role == "end") {
-      std::cout << "  \"" << wg[v].name << "\" [role=\"end\"]" << std::endl;
+      target << "  \"" << wg[v].name << "\" [role=\"end\"]" << std::endl;
       continue;
     }
   }
 
-  Util::printLine();
+  Util::printLineFile(target);
 
   for (const WG::vDesc &v : vertices)
-    WG::printOutEdges(wg, v);
+    WG::writeOutEdges(wg, v, target);
 
 
-  std::cout << "}" << std::endl;
+  target << "}" << std::endl;
 
   return;
+}
+
+void WG::print(const WG_t &wg)
+{
+
+WG::write(wg,std::cout);
+
 }
 
 

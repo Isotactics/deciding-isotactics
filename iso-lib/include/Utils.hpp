@@ -17,6 +17,7 @@ namespace Util {
   }
 
   void printLine();
+  void printLineFile(std::ostream& target);
   void printLineDebug();
 }
 

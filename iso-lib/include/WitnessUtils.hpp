@@ -102,8 +102,9 @@ namespace WG {
 
 
   void print(const WG_t &wg);
-  void printOutEdges(const WG_t &wg, const WG::vDesc &v);
-  void printOutEdge(const WG_t &wg, const WG::eDesc &e);
+  void write(const WG_t &wg, std::ostream& target);
+  void writeOutEdges(const WG_t &wg, const WG::vDesc &v, std::ostream& target);
+  void writeOutEdge(const WG_t &wg, const WG::eDesc &e, std::ostream& target);
 
   void printDebug(const WG_t &wg);
   void printOutEdgesDebug(const WG_t &wg, const WG::vDesc &v);

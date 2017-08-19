@@ -18,7 +18,12 @@
 #include "DetWitnessUtils.hpp"
 #include "DetGraph.hpp"
 
+char* boolToWord(bool b) {
 
+  if (b) return "Yes";
+  return "No";
+
+}
 
 
 int main(int argc, char *argv[])
@@ -49,15 +54,23 @@ int main(int argc, char *argv[])
   WG_t wg = WG::create(dg1, dg2, lgm1, lgm2, alm);
   //WG::print(wg);
 
-  DWG_t dwg1 = DWG::createLhs(wg, els1);
-  //DWG::print(dwg1);
+  std::cout << "Created witness graph for machines \"" << argv[1] << "\" and \""  << argv[2] << "\" w.r.t. alignment \""  << argv[3] << "\"" << std::endl;
 
+  std::cout << "Writing witness graph to \"" << argv[1] << "_" << argv[2] << "_"  << argv[3] << "_witness_graph.dot\"" << std::endl;
+
+  std::ofstream myfile;
+  myfile.open((std::string) argv[1] + "_" + (std::string) argv[2] + "_" + (std::string) argv[3] +  "_witness_graph.dot");
+  WG::write(wg,myfile);
+  myfile.close();
+
+
+  std::cout << "Comparing machine behavior with the witness graph... " << std::endl;
+
+  DWG_t dwg1 = DWG::createLhs(wg, els1);
   DWG_t dwg2 = DWG::createRhs(wg, els2);
 
-  std::cout << "g1 vs dwgLhs: " << Cmp::isEqual(dg1, dwg1, lgm1) << std::endl;
-  std::cout << "g2 vs dwgRhs: " << Cmp::isEqual(dg2, dwg2, lgm2) << std::endl;
-
-
+  std::cout << "Does the witness graph include all behavior of \"" << argv[1] << "\"? " << boolToWord(Cmp::isEqual(dg1, dwg1, lgm1)) << std::endl;
+  std::cout << "Does the witness graph include all behavior of \"" << argv[2] << "\"? " << boolToWord(Cmp::isEqual(dg2, dwg2, lgm2)) << std::endl;
 
 
   return 0;
