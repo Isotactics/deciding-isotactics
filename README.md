@@ -14,14 +14,17 @@ Copyright 2016 Humboldt-Universität zu Berlin.
 This project is released under the MIT License.
 
 #### Build
-  The real project can be found in the isotactics folder.
   To build use the given build script:
 
-    cd isotactics
     sh build.sh
+
+  You require cmake and boost to build and run the tool.
 
 #### Clean
     sh build.sh clean
 
+#### Usage
 
+    ./bin/iso-decision m1.dot m2.dot alignment.json
 
+  Please find example files for m1.dot m2.dot and alignment.json in the ''resources'' directory. 

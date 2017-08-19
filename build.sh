@@ -8,8 +8,8 @@ if [ "$1" == "clean" ]; then
 fi
 
 # create dirs
-mkdir --parents bin
-mkdir --parents build
+mkdir -p bin
+mkdir -p build
 
 cd build
 cmake ..
