@@ -20,8 +20,8 @@
 
 char* boolToWord(bool b) {
 
-  if (b) return "Yes";
-  return "No";
+  if (b) return (char*)"Yes";
+  return (char*)"No";
 
 }
 
