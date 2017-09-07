@@ -33,7 +33,7 @@ DG_t DG::determinize(const Graph_t &g, const edgeLabelSet &els)
     for (const alignmentGrouping &gp : els) {
       label l = Alm::getLabelFromGrouping(gp);
 
-      if (!DG::hasEdgeForGrouping(g, outEdges, gp))
+      if (!DG::hasEdgeForGrouping(g, outEdges, gp, l))
         continue;
 
       std::vector<Graph::eDesc> edges = DG::getEdgesForGrouping(g, outEdges, gp);
@@ -233,11 +233,23 @@ Range<DG::oeIter> DG::getOutEdges(const DG_t &g, const DG::vDesc &v)
   return Util::makeRange(boost::out_edges(v, g));
 }
 
-bool DG::hasEdgeForGrouping(const Graph_t &g, const std::vector<Graph::eDesc> &edges, const alignmentGrouping &gp)
+bool DG::hasEdgeForGrouping(const Graph_t &g, const std::vector<Graph::eDesc> &edges, const alignmentGrouping &gp, label& l)
 {
   for (const Graph::eDesc &e : edges) {
     if (g[e].gp == gp)
+    {
+      // we found the edge in g1/g2 that belongs to this alignment grouping.
+      // the edge in the corresponding dg1/dg2 will also only have one label
+      // as its label. we need to tell dg1/dg2 which of the labels in the
+      // alignment grouping originally created the grouping and use this as the
+      // edge's label.
+      // for example, consider from the paper example state II and edge x.
+      // this egde will have the alignment grouping {{s,w,x}}. in the
+      // determinized graph this edge will then also get label x.
+      l = g[e].label;
+
       return true;
+    }
   }
 
   return false;

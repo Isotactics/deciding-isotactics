@@ -77,7 +77,7 @@ namespace DG {
   std::vector<DG::eDesc> getOutEdges(const DG_t &dg, const DG::vDesc &v, const Graph_t &g);
   Range<DG::oeIter> getOutEdges(const DG_t &g, const DG::vDesc &v);
 
-  bool hasEdgeForGrouping(const Graph_t &g, const std::vector<Graph::eDesc> &edges, const alignmentGrouping &gp);
+  bool hasEdgeForGrouping(const Graph_t &g, const std::vector<Graph::eDesc> &edges, const alignmentGrouping &gp, label& l);
   std::vector<Graph::eDesc> getEdgesForGrouping(const Graph_t &g, const std::vector<Graph::eDesc> &edges, const alignmentGrouping &gp);
 
   DG::vDesc getDst(const DG::vDesc &v, const std::string &l, const DG_t &g);
