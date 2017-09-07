@@ -285,33 +285,37 @@ DG::vDesc DG::getDst(const DG::vDesc &v, const std::string &l, const DG_t &g)
 
 void DG::print(const DG_t &g)
 {
-  std::cout << "digraph {" << std::endl;
+  return DG::print(g, std::cout);
+}
+void DG::print(const DG_t &g, std::ostream& target)
+{
+  target << "digraph {" << std::endl;
 
   Range<DG::vIter> vertices = Util::makeRange(boost::vertices(g));
 
   for (const DG::vDesc &v : vertices) {
     if (g[v].role == "start") {
-      std::cout << " \"" << g[v].name << "\" [role=\"start\"]" << std::endl;
+      target << " \"" << g[v].name << "\" [role=\"start\"]" << std::endl;
       continue;
     }
 
     if (g[v].role == "end") {
-      std::cout << " \"" << g[v].name << "\" [role=\"end\"]" << std::endl;
+      target << " \"" << g[v].name << "\" [role=\"end\"]" << std::endl;
       continue;
     }
 
     if (g[v].role == "empty") {
-      std::cout << " \"" << g[v].name << "\" [role=\"empty\"]" << std::endl;
+      target << " \"" << g[v].name << "\" [role=\"empty\"]" << std::endl;
       continue;
     }
   }
 
-  Util::printLine();
+  target << std::endl;
 
   for (const DG::vDesc &v : vertices)
-    DG::printOutEdges(g, v);
+    DG::printOutEdges(g, v, target);
 
-  std::cout << "}\n\n" << std::endl;
+  target << "}\n\n" << std::endl;
 
   return;
 }
@@ -338,22 +342,34 @@ void DG::printEdges(const DG_t &g)
 
 void DG::printOutEdge(const DG_t &g, const eDesc &e)
 {
+  return DG::printOutEdge(g, e, std::cout);
+}
+void DG::printOutEdge(const DG_t &g, const eDesc &e, std::ostream& target)
+{
   const DG::vDesc src = boost::source(e, g);
   const DG::vDesc dst = boost::target(e, g);
 
-  std::cout << "  " << g[src].name << " -> " << g[dst].name;
-  std::cout << " [label=\"" << g[e].label << "\"]" << std::endl;
+  target << "  " << g[src].name << " -> " << g[dst].name;
+
+  dgEdgeProps edge = g[e];
+
+  target << " [label=\"" << g[e].label << "\"]" << std::endl;
+  // target << " [label=\"" << Alm::groupingToStr(g[e].gp) << "\"]" << std::endl;
 }
 
-void DG::printOutEdges(const DG_t &g, const DG::vDesc &vd) {
-
+void DG::printOutEdges(const DG_t &g, const DG::vDesc &vd)
+{
+  return DG::printOutEdges(g, vd, std::cout);
+}
+void DG::printOutEdges(const DG_t &g, const DG::vDesc &vd, std::ostream& target)
+{
   const Range<DG::oeIter> outEdges = Util::makeRange(boost::out_edges(vd, g));
 
   if (outEdges.empty())
     return;
 
   for (const DG::eDesc &e : outEdges)
-    DG::printOutEdge(g, e);
+    DG::printOutEdge(g, e, target);
 
   return;
 }

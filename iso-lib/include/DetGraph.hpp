@@ -86,12 +86,15 @@ namespace DG {
 
 
   void print(const DG_t &g);
+  void print(const DG_t &g, std::ostream& target);
 
   void printVertices(const DG_t &g);
   void printEdges(const DG_t &g);
 
   void printOutEdge(const DG_t &g, const Graph::eDesc &e);
+  void printOutEdge(const DG_t &g, const Graph::eDesc &e, std::ostream& target);
   void printOutEdges(const DG_t &g, const Graph::vDesc &vd);
+  void printOutEdges(const DG_t &g, const Graph::vDesc &vd, std::ostream& target);
 }
 
 #endif // __DETGRAPHUTILS_HPP__
