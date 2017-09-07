@@ -361,7 +361,7 @@ void DG::printOutEdge(const DG_t &g, const eDesc &e, std::ostream& target)
   const DG::vDesc src = boost::source(e, g);
   const DG::vDesc dst = boost::target(e, g);
 
-  target << "  " << g[src].name << " -> " << g[dst].name;
+  target << "  \"" << g[src].name << "\" -> \"" << g[dst].name << "\"";
 
   dgEdgeProps edge = g[e];
 

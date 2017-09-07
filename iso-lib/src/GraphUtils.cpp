@@ -188,7 +188,7 @@ void Graph::printOutEdge(const Graph_t &g, const eDesc &e)
   const Graph::vDesc src = boost::source(e, g);
   const Graph::vDesc dst = boost::target(e, g);
 
-  std::cout << "  " << g[src].name << " -> " << g[dst].name;
+  std::cout << "  \"" << g[src].name << "\" -> \"" << g[dst].name << "\"";
   std::cout << " [label=\"" << g[e].label << " gp: " << Alm::groupingToStr(g[e].gp) << "\"]" << std::endl;
 }
 
