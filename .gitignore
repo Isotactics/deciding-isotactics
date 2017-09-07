@@ -1,0 +1,11 @@
+bin
+build
+
+// Xcode specific rules
+/CMakeFiles
+/CMakeScripts
+/CMakeCache.txt
+*.build
+*.cmake
+*.xcodeproj
+Debug

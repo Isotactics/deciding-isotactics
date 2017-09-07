@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.0)
 
 project (isotactics)
 
+# macOS-specific: add this include directory so that
+# cmake/Xcode may find Boost installed via HomeBrew.
+# create new Xcode project by running the following
+# command in this directory:
+# cmake -G Xcode CMAKE_BUILD_TYPE="Debug" ./
+include_directories(/usr/local/include)
+
 set (CMAKE_BINARY_DIR ../../../bin)
 set (CMAKE_CXX_FLAGS "-std=c++14 -Wall -Wextra")
 
@@ -14,4 +21,3 @@ find_package(Boost 1.50 COMPONENTS graph)
 
 
 subdirs(iso-dev iso-decision iso-lib)
-
