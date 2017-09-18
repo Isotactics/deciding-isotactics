@@ -29,11 +29,6 @@ DG_t DG::determinize(const Graph_t &g, const edgeLabelSet &els)
     dgTodo.pop_front();
 
     std::vector<Graph::eDesc> outEdges = DG::getOutEdges(dg, curr, g);
-    
-    for (const auto &edge : outEdges)
-    {
-      std::cout << g[edge].label << ":" << Alm::groupingToStr(g[edge].gp) << std::endl;
-    }
 
     for (const alignmentGrouping &gp : els) {
       // skip empty groupings as they will be processed via epsilon closure
