@@ -61,8 +61,13 @@ namespace Graph {
 
   Graph::vDesc getVertex(const std::string &vName, const Graph_t &g);
   Graph::vDesc getDst(const Graph::vDesc &v, const std::string &l, const Graph_t &g);
-
-  std::vector<Graph::vDesc> getDestinations(const Graph_t &g, std::vector<Graph::eDesc> edges);
+  
+  /**
+   * @deprecated in favor of Graph::getDestinationsWithEpsilonClosure
+   */
+  std::set<Graph::vDesc> getDestinations(const Graph_t &g, std::vector<Graph::eDesc> edges);
+  
+  std::set<Graph::vDesc> getDestinationsWithEpsilonClosure(const Graph_t &g, std::vector<Graph::eDesc> edges);
 
 
 

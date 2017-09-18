@@ -55,6 +55,7 @@ namespace DG {
 
   DG::Vertex createVertex();
   DG::Vertex createVertex(const std::vector<Graph::vDesc> &vertices, const Graph_t &g);
+  DG::Vertex createVertex(const std::set<Graph::vDesc> &vertices, const Graph_t &g);
 
   DG::Vertex createStart();
   DG::vDesc getStart(const DG_t &dg);

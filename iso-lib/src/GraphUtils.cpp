@@ -1,5 +1,7 @@
 #include <iostream>
 #include <sstream>
+#include <deque>
+#include <unordered_map>
 
 #include "GraphUtils.hpp"
 #include "Utils.hpp"
@@ -109,15 +111,82 @@ Graph::vDesc Graph::getDst(const Graph::vDesc &v, const std::string &l, const Gr
   return dst;
 }
 
-std::vector<Graph::vDesc>
+/**
+ * @deprecated in favor of Graph::getDestinationsWithEpsilonClosure
+ */
+std::set<Graph::vDesc>
 Graph::getDestinations(const Graph_t &g, std::vector<Graph::eDesc> edges)
 {
-  std::vector<Graph::vDesc> res;
-
+  std::set<Graph::vDesc> res;
+  
   for (const Graph::eDesc &e : edges)
-    res.push_back(boost::target(e, g));
-
+    res.insert(boost::target(e, g));
+  
   return res;
+}
+
+std::set<Graph::vDesc>
+Graph::getDestinationsWithEpsilonClosure(const Graph_t &g, std::vector<Graph::eDesc> edges)
+{
+  // set of vertices that are connected to as the target of the edges and via epsilon-closure
+  std::set<Graph::vDesc> outputVertexSet;
+  
+  // queue of vertices that may be have further outgoing epsilon edges
+  std::deque<Graph::vDesc> epsilonTodo;
+  
+  // hash map of vertices that we already visited. this map will be used to prevent processing
+  // a vertex more than once.
+  std::unordered_map<Graph::vDesc, bool> epsilonDone;
+  
+  for (const Graph::eDesc &e : edges)
+  {
+    auto target = boost::target(e, g);
+    
+    // add to vertex list
+    outputVertexSet.insert(target);
+    
+    // add to todo list so that we check for epsilon edges
+    epsilonTodo.push_back(target);
+  }
+  
+  // now recursively check all vertices for epsilon-edges and add
+  // every vertex that is connected this way (calculate epsilon closure).
+  while (!epsilonTodo.empty())
+  {
+    // pop current item
+    auto vertex = epsilonTodo.front();
+    epsilonTodo.pop_front();
+    
+    // mark this vertex as done so that we don't push it into our todo queue once more
+    epsilonDone.insert({vertex, true});
+    
+    // for all outgoing edges
+    for (const auto &edgeDescriptor : Graph::getOutEdges(g, vertex))
+    {
+      auto edge = g[edgeDescriptor];
+      
+      // empty grouping on edge label means the label is considered an epsilon.
+      // the grouping property is the set of all groups this label is contained in.
+      // if the label is not contained in any group then this set of groups will be empty.
+      if ( edge.gp.empty() )
+      {
+        // this target vertex is connected via epsilon edge
+        auto target = boost::target(edgeDescriptor, g);
+        
+        // check first if we already did this vertex and only push it if not.
+        if (epsilonDone.find(target) == epsilonDone.end())
+        {
+          // add to vertex list
+          outputVertexSet.insert(target);
+        
+          // add to todo list so that we check for epsilon edges
+          epsilonTodo.push_back(target);
+        }
+      }
+    }
+  }
+  
+  return outputVertexSet;
 }
 
 

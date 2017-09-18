@@ -29,30 +29,52 @@ DG_t DG::determinize(const Graph_t &g, const edgeLabelSet &els)
     dgTodo.pop_front();
 
     std::vector<Graph::eDesc> outEdges = DG::getOutEdges(dg, curr, g);
+    
+    for (const auto &edge : outEdges)
+    {
+      std::cout << g[edge].label << ":" << Alm::groupingToStr(g[edge].gp) << std::endl;
+    }
 
     for (const alignmentGrouping &gp : els) {
-      label l = Alm::getLabelFromGrouping(gp);
+      // skip empty groupings as they will be processed via epsilon closure
+      if (gp.empty())
+          continue;
+          
+      // we get this label from DG::hasEdgeForGrouping(_, _, _, l)
+      label l /*= Alm::getLabelFromGrouping(gp)*/;
 
       if (!DG::hasEdgeForGrouping(g, outEdges, gp, l))
         continue;
 
       std::vector<Graph::eDesc> edges = DG::getEdgesForGrouping(g, outEdges, gp);
-      std::vector<Graph::vDesc> dsts = Graph::getDestinations(g, edges);
+      
+      // DONE: could use unique set instead of vector to prevent nodes like "{4,4}" and
+      //       possibly prevent errors if there is another node "{4}".
+      //       Since DG::hasVertex tests for name "{4,4}" != "{4}" has potential for errors. 
+      std::set<Graph::vDesc> dsts = Graph::getDestinationsWithEpsilonClosure(g, edges);
 
       DG::Vertex nv = DG::createVertex(dsts, g);
       DG::updateVertexName(nv, g);
 
-      if (DG::hasVertex(dg, nv)) {
+      if (DG::hasVertex(dg, nv))
+      {
+        // vertex already exists. only add a new edge with the current label l.
+        
         DG::vDesc existingDst = DG::getVertexByName(dg, nv.name);
         DG::addEdge(dg, curr, l, existingDst);
-
-        continue;
+        
+        // no need to process this node again so do not put it in our todo queue.
       }
+      else
+      {
+        // vertex didn't exist. insert it into the deterministic graph and add the edge.
+        
+        DG::vDesc nvd = DG::addVertex(dg, nv);
+        DG::addEdge(dg, curr, l, nvd);
 
-      DG::vDesc nvd = DG::addVertex(dg, nv);
-      DG::addEdge(dg, curr, l, nvd);
-
-      dgTodo.push_back(nvd);
+        // also put it in our todo queue.
+        dgTodo.push_back(nvd);
+      }
     }
   }
 
@@ -69,14 +91,27 @@ DG::Vertex DG::createVertex()
 DG::Vertex DG::createVertex(const std::vector<Graph::vDesc> &vertices, const Graph_t &g)
 {
   DG::Vertex nv;
-
+  
   for (const Graph::vDesc &v : vertices) {
     DG::addVertexToSet(v, nv);
-
+    
     if (Graph::isFinalState(g, v))
       nv.role = "end";
   }
-
+  
+  return nv;
+}
+DG::Vertex DG::createVertex(const std::set<Graph::vDesc> &vertices, const Graph_t &g)
+{
+  DG::Vertex nv;
+  
+  for (const Graph::vDesc &v : vertices) {
+    DG::addVertexToSet(v, nv);
+    
+    if (Graph::isFinalState(g, v))
+      nv.role = "end";
+  }
+  
   return nv;
 }
 
