@@ -475,7 +475,19 @@ bool DWG::destinationsAreSubset(const std::vector<WG::vDesc> dsts, const DWG::Ve
 
 void DWG::findAllNodesLhs(DWG::Vertex &v, const WG_t &wg)
 {
-  for (const WG::vDesc &start : v.vs) {
+  // fill a queue with the vectors in v.vs and then iterate over them
+  // we need the queue because inside the loop we may append new vectors
+  // to v.vs, thereby invalidating any iterator.
+  std::deque<WG::vDesc> vectors;
+  for (const auto &start : v.vs) {
+    vectors.push_back(start);
+  }
+  
+  while(!vectors.empty())
+  {
+    auto start = vectors.front();
+    vectors.pop_front();
+    
     std::cerr << "[findAllNodes] start at " << wg[start].name << "\n";
 
     std::deque<WG::vDesc> todo;
@@ -541,7 +553,19 @@ void DWG::findAllNodesLhs(DWG::Vertex &v, const WG_t &wg)
 
 void DWG::findAllNodesRhs(DWG::Vertex &v, const WG_t &wg)
 {
-  for (const WG::vDesc &start : v.vs) {
+  // fill a queue with the vectors in v.vs and then iterate over them
+  // we need the queue because inside the loop we may append new vectors
+  // to v.vs, thereby invalidating any iterator.
+  std::deque<WG::vDesc> vectors;
+  for (const auto &start : v.vs) {
+    vectors.push_back(start);
+  }
+  
+  while(!vectors.empty())
+  {
+    auto start = vectors.front();
+    vectors.pop_front();
+    
     std::cerr << "[findAllNodes] start at " << wg[start].name << "\n";
 
     std::deque<WG::vDesc> todo;
