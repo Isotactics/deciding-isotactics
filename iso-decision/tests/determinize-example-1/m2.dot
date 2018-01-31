@@ -1,6 +1,6 @@
 digraph {
   I [role="start"]
-  II [role="end"]
+  II [role="end", peripheries=2]
 
   I   -> II   [label="s"];
 }

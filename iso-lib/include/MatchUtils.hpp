@@ -14,6 +14,7 @@ namespace Match {
 
   bool hasLabel(const match &m, const label &l);
   bool setHasMatch(const matchSet &ms, const match &m);
+  bool hasMatchWithBothGroupsDifferentThan(const matchSet &matchSet, const match &match);
 
   bool empty(const match &m);
 
@@ -21,7 +22,7 @@ namespace Match {
   std::string setToString(const matchSet &m);
 
 
-  match getMatch(const alignment &alm, const label &l1, const label &l2);
+  match getMatch(const matchSet &ms, const alignment &alm, const label &l1, const label &l2);
   matchSet getMatchSet(const alignment &alm, const matchSet &ms, const label &l1, const label &l2);
 
   matchSet getMatchSet2(const matchSet &ms, const label &l);

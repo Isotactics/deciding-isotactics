@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     return 0;
   }
 
-  std::ofstream error("error.txt");
+  // std::ofstream error("error.txt");
 
   // redirect cerr:
   ;// std::cerr.rdbuf(0);

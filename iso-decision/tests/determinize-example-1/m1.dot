@@ -1,6 +1,6 @@
 digraph {
   1 [role="start"]
-  5 [role="end" peripheries=2]
+  5 [role="end", peripheries=2]
 
   1   -> 2  [label="a"];
   2   -> 4  [label="e"];

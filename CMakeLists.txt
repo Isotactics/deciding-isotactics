@@ -7,6 +7,8 @@ project (isotactics)
 # see docs/xcode.md for further instructions on using Xcode.
 include_directories(/usr/local/include)
 
+include_directories(${Boost_INCLUDE_DIRS})
+
 set (CMAKE_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
@@ -16,6 +18,11 @@ set (CMAKE_CXX_FLAGS "-std=c++14 -Wall -Wextra")
 # setting this to 1 will enable them. this is a preprocessor option. the
 # application has to be recompiled for this change to take effect
 add_definitions (-D ISO_LIB_ENABLE_DEBUG_OUTPUT=0)
+
+# setting ISO_LIB_ENFORCE_MAXIMALITY=1 will enforce the maximality property of
+# the matching algorithm, effectively switching to the newer definition
+# of M in the paper.
+add_definitions (-D ISO_LIB_ENFORCE_MAXIMALITY=1)
 
 set (Boost_USE_STATIC_LIBS OFF)
 set (Boost_USE_MULTITHREADED ON)
