@@ -1,8 +1,0 @@
-digraph {
- "{1}" [role="start"]
- "{2, 3}" [role="end"]
-
-  "{1}" -> "{2, 3}" [label="a"]
-}
-
-
