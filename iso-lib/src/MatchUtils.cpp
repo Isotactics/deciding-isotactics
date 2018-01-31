@@ -98,8 +98,6 @@ match Match::getMatch(const matchSet &ms, const alignment &alm, const label &l1,
   */
 
 #if ISO_LIB_ENFORCE_MAXIMALITY
-#endif
-#if true
 
   if (ms.empty())
   {
