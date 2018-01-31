@@ -1,0 +1,7 @@
+digraph {
+  "{1}, {I}, {}" ->  "{2}, {II}, {(a <> s)}" [label="{a}, {s}", gp1="a", gp2="s"]
+  "{2}, {II}, {(a <> s)}" ->  "{3}, {III}, {(b,c,d <> t)}" [label="{b,c,d}, {t | t}", gp1="b,c,d", gp2="t | t"]
+  "{2}, {II}, {(a <> s)}" ->  "{4}, {III}, {(b,c,d <> t)}" [label="{b,c,d}, {t | t}", gp1="b,c,d", gp2="t | t"]
+  "{3}, {III}, {(b,c,d <> t)}" ->  "{5}, {III}, {(b,c,d <> t)}" [label="{b,c,d}, {-}", gp1="b,c,d", gp2="-"]
+  "{5}, {III}, {(b,c,d <> t)}" ->  "{6}, {IV}, {(f <> u)}" [label="{f}, {u}", gp1="f", gp2="u"]
+}

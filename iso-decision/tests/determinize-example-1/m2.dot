@@ -1,0 +1,6 @@
+digraph {
+  I [role="start"]
+  II [role="end"]
+
+  I   -> II   [label="s"];
+}

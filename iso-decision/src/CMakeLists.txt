@@ -6,11 +6,13 @@ include_directories(${isotactics_SOURCE_DIR}/iso-lib/include)
 
 link_directories(${isotactics_SOURCE_DIR}/iso-lib/src)
 
-
-
 file(GLOB SRC_FILES *.cpp)
 
 add_executable(iso-decision ${SRC_FILES})
 
 target_link_libraries(iso-decision iso-lib ${Boost_LIBRARIES})
 
+
+
+
+enable_testing()

@@ -22,7 +22,8 @@ Graph_t Graph::parse(const std::string &path)
   std::ifstream m(path);
 
   if (!m) {
-    std::cout << "[Err] Graph::parse // ifstream open" << std::endl;
+    std::cout << "[Err] Graph::parse // ifstream open of file " << path << std::endl;
+    exit(1);
     return g;
   }
 
