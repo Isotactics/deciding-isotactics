@@ -82,71 +82,79 @@ std::string Match::setToString(const matchSet &ms)
   return res.str();
 }
 
-#include <boost/tokenizer.hpp>
-
-match Match::getMatch(const matchSet &ms, const alignment &alm, const label &l1, const label &l2)
-{
-  match m;
-  matchSet res;
-
-  /*
-  // this code doesn't seem to have a purpose - smisch
-  typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
-
-  boost::char_separator<char> sep{" | "};
-  tokenizer tok{l2, sep};
-  */
-
-#if ISO_LIB_ENFORCE_MAXIMALITY
-
-  if (ms.empty())
-  {
-    for (const alignmentPair &p : alm) {
-      if ((Alm::hasLabel(p.first, l1)) && (Alm::hasLabel(p.second, l2)))
-        res.push_back(p);
-    }
-  }
-  else
-  {
-    for (const alignmentPair &p : alm) {
-      if ((Alm::hasLabel(p.first, l1)) && (Alm::hasLabel(p.second, l2)) &&
-          !Match::setHasMatch(ms, p) && Match::hasMatchWithBothGroupsDifferentThan(ms, p))
-        res.push_back(p);
-    }
-  }
-
-
-
-#else
-
-  for (const alignmentPair &p : alm) {
-    if ((Alm::hasLabel(p.first, l1)) && (Alm::hasLabel(p.second, l2)))
-      res.push_back(p);
-  }
-#endif
-
-  if (res.empty())
-    return m;
-
-  return res[0];
-}
-
+/**
+ * Get a new match set according to the first rule of the witness graph construction,
+ * which assumes that both K_i != \emptyset.
+ * We use the old match set ms, the alignment alm and the two labels
+ * that were chosen to advance each FSM ( K_1 = G(l1) etc. ).
+ */
 matchSet Match::getMatchSet(const alignment &alm, const matchSet &ms,
                                           const label &l1, const label &l2)
 {
-  matchSet res;
+  // create empty result match set
+  matchSet resultMatchSet;
 
-  match m = Match::getMatch(ms, alm, l1, l2);
+#if ISO_LIB_ENFORCE_MAXIMALITY
+  
+  if (ms.empty())
+  {
+    // M defined according to first case (of first rule).
+    // previous M was empty, therefore new M will be K_1 x K_2 \cap \alignment
+    for (const alignmentPair &p : alm)
+    {
+      // include all alignment pairs where the symbols l1 and l2 are included on each side respectively
+      if ((Alm::hasLabel(p.first, l1)) && (Alm::hasLabel(p.second, l2)))
+      {
+        resultMatchSet.push_back(p);
+      } // if
+    } // for
+  } // if ms.empty
+  
+  else
+  {
+    // M defined according to second case (of first rule).
+    // previous M was not empty and K_1 != \emptyset and K_2 != \emptyset
+    for (const alignmentPair &p : alm)
+    {
+      // include all alignment pairs where the symbols l1 and l2 are included on each side respectively
+      if ((Alm::hasLabel(p.first, l1)) && (Alm::hasLabel(p.second, l2))
+          // exclude alignment pairs that are present in the previous match set
+          && ! Match::setHasMatch(ms, p)
+          // exclude this alignment pair if there isn't another pair in the previous match set
+          // that has different groupings on both sides (G'_1 != G_1 and G'_2 != G_2).
+          && Match::hasMatchWithBothGroupsDifferentThan(ms, p)
+      )
+      {
+        resultMatchSet.push_back(p);
+      } // if
+    } // for
+  } // if ms.empty
+  
+#else
+  
+  // original paper definition which does not enforce maximality.
+  // it now also excludes pairs that where present in the previous match set, to fit the paper definition.
+  for (const alignmentPair &p : alm) {
+    // include all alignment pairs where the symbols l1 and l2 are included on each side respectively
+    if ((Alm::hasLabel(p.first, l1)) && (Alm::hasLabel(p.second, l2))
+        // exclude alignment pairs that are present in the previous match set
+        && ! Match::setHasMatch(ms, p) )
+    {
+      resultMatchSet.push_back(p);
+    } // if
+  } // for
+  
+#endif
 
-  if (Match::empty(m))
-    return res;
-
-  if (!Match::setHasMatch(ms, m))
-    res.push_back(m);
-
-  return res;
+  return resultMatchSet;
 }
 
+/**
+ * Get a new match set according to the second rule of the witness graph construction,
+ * which assumes one of the K_i = \emptyset.
+ * We use the old match set ms, the alignment alm and the two labels
+ * that were chosen to advance each FSM ( K_1 = G(l1) etc. ).
+ */
 matchSet Match::getMatchSet2(const matchSet &ms, const label &l)
 {
   matchSet res;

@@ -22,7 +22,6 @@ namespace Match {
   std::string setToString(const matchSet &m);
 
 
-  match getMatch(const matchSet &ms, const alignment &alm, const label &l1, const label &l2);
   matchSet getMatchSet(const alignment &alm, const matchSet &ms, const label &l1, const label &l2);
 
   matchSet getMatchSet2(const matchSet &ms, const label &l);
