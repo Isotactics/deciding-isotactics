@@ -89,16 +89,16 @@ bool Cmp::isEqual(const DG_t &g, const DWG_t &dwg, const labelGroupingMap &lgm) 
     }
 
     IF_DEBUG(
-      std::cerr << "ToDo:\n";
+      DEBUG << "ToDo:\n";
 
       for (const Cmp::Vertex &v : cmpTodo)
-        std::cerr << Cmp::vpToString(v.pair, g, dwg) << std::endl;
+        DEBUG << Cmp::vpToString(v.pair, g, dwg) << std::endl;
 
-      std::cerr << "\nVisited:\n";
+      DEBUG << "\nVisited:\n";
       for (const Cmp::Vertex &v : visited)
-        std::cerr << Cmp::vpToString(v.pair, g, dwg) << std::endl;
+        DEBUG << Cmp::vpToString(v.pair, g, dwg) << std::endl;
 
-      std::cerr << "\n\n\n\n\n";
+      DEBUG << "\n\n\n\n\n";
     )
   }
 

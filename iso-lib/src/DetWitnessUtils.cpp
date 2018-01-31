@@ -61,12 +61,12 @@ DWG_t DWG::createLhs(const WG_t &wg, const edgeLabelSet &els)
         WG::printOutEdgeDebug(wg, e);
 
       IF_DEBUG(
-        std::cerr << "    destinations:\n";
+        DEBUG << "    destinations:\n";
 
         for (const WG::vDesc &v : dsts)
-          std::cerr << wg[v].name << "\n";
+          DEBUG << wg[v].name << "\n";
 
-        std::cerr << "    dsts are sub: " << DWG::destinationsAreSubset(dsts, DWG::getVertex(dwgv1, dwg)) << "\n";
+        DEBUG << "    dsts are sub: " << DWG::destinationsAreSubset(dsts, DWG::getVertex(dwgv1, dwg)) << "\n";
       )
 
       if (DWG::destinationsAreSubset(dsts, DWG::getVertex(dwgv1, dwg))) {
