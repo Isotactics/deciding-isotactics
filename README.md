@@ -6,7 +6,8 @@ Copyright 2016 Humboldt-Universität zu Berlin.
 
 ### List of Contributors:
  - Frank Lange (HU Berlin)
- - Jan Sürmeli (HU Berlin)
+ - Sebastian Misch (HU Berlin)
+ - Jan Sürmeli (TU Berlin)
  - Matthias Weidlich (HU Berlin)
 
 
