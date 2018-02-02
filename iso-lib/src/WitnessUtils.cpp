@@ -4,6 +4,7 @@
 #include "MatchUtils.hpp"
 #include "WitnessUtils.hpp"
 
+#include "Logging.hpp"
 
 
 
@@ -62,13 +63,13 @@ WG_t WG::create(const DG_t &g1, const DG_t &g2, labelGroupingMap &lgm1,
     ms = wg[wgv1].ms;
 
     currentV = WG::createVertex(wg[wgv1].v1Name, wg[wgv1].v2Name, ms);
-    std::cerr << "working on: " << currentV.name << std::endl;
+    DEBUG << "working on: " << currentV.name << std::endl;
 
     if ((g1[gv1].role == "end") && (g2[gv2].role == "end"))
       wg[wgv1].role = "end";
 
 
-    std::cerr << "  checking rule 1:" << std::endl;
+    DEBUG << "  checking rule 1:" << std::endl;
 
     for (const DG::eDesc &e1 : oe1) {
 
@@ -82,23 +83,23 @@ WG_t WG::create(const DG_t &g1, const DG_t &g2, labelGroupingMap &lgm1,
         if (msNew.empty())
           continue;
 
-        std::cerr << "    found new match set" << std::endl;
-        std::cerr << "    " << l1 << ", " << l2 << ", " << Match::setToString(msNew) << std::endl;
+        DEBUG << "    found new match set" << std::endl;
+        DEBUG << "    " << l1 << ", " << l2 << ", " << Match::setToString(msNew) << std::endl;
 
         dst1 = boost::target(e1, g1);
         dst2 = boost::target(e2, g2);
 
         WG::Vertex newV = WG::createVertex(g1[dst1].name, g2[dst2].name, msNew);
-        std::cerr << "    new Vertex: " << newV.name << std::endl;
+        DEBUG << "    new Vertex: " << newV.name << std::endl;
 
         if (WG::hasVertex(newV, wg)) {
-          std::cerr << "    vertex already exists. adding edge, not todo" << std::endl << std::endl;
+          DEBUG << "    vertex already exists. adding edge, not todo" << std::endl << std::endl;
           wgv2 = WG::getVertex(newV, wg);
           WG::addEdge(wgv1, lgm1[l1], lgm2[l2], wgv2, wg);
           continue;
         }
 
-        std::cerr << "    new vertex doesn't exist. add vertex, add edge, add todo" << std::endl << std::endl;
+        DEBUG << "    new vertex doesn't exist. add vertex, add edge, add todo" << std::endl << std::endl;
 
         wgv2 = WG::addVertex(newV, wg);
         WG::addEdge(wgv1, lgm1[l1], lgm2[l2], wgv2, wg);
@@ -110,8 +111,8 @@ WG_t WG::create(const DG_t &g1, const DG_t &g2, labelGroupingMap &lgm1,
 
 
 
-    std::cerr << "  checking rule 2:" << std::endl;
-    std::cerr << "    g1 moves:" << std::endl;
+    DEBUG << "  checking rule 2:" << std::endl;
+    DEBUG << "    g1 moves:" << std::endl;
 
 
     for (const WG::eDesc &e1 : oe1) {
@@ -122,8 +123,8 @@ WG_t WG::create(const DG_t &g1, const DG_t &g2, labelGroupingMap &lgm1,
           if (msNew.empty())
             continue;
 
-      std::cerr << "    found new match set" << std::endl;
-      std::cerr << "    " << l1 << ", " << Match::setToString(msNew) << std::endl;
+      DEBUG << "    found new match set" << std::endl;
+      DEBUG << "    " << l1 << ", " << Match::setToString(msNew) << std::endl;
 
       dst1 = boost::target(e1, g1);
       dst2 = gv2;
@@ -131,23 +132,23 @@ WG_t WG::create(const DG_t &g1, const DG_t &g2, labelGroupingMap &lgm1,
       alignmentGrouping gp2;
 
       WG::Vertex newV = WG::createVertex(g1[dst1].name, g2[dst2].name, msNew);
-      std::cerr << "    new Vertex: " << newV.name << std::endl << std::endl;
+      DEBUG << "    new Vertex: " << newV.name << std::endl << std::endl;
 
       if (WG::vertexEqual(currentV, newV)) {
-        std::cerr << "   i,m the new vertex, only adding edge to myself " << std::endl;
+        DEBUG << "   i,m the new vertex, only adding edge to myself " << std::endl;
         wgv2 = wgv1;
         WG::addEdge(wgv1, lgm1[l1], gp2, wgv2, wg);
         continue;
       }
 
       if (WG::hasVertex(newV, wg)) {
-        std::cerr << "   new vertex already exists. adding edge, not todo " << std::endl;
+        DEBUG << "   new vertex already exists. adding edge, not todo " << std::endl;
         wgv2 = WG::getVertex(newV, wg);
         WG::addEdge(wgv1, lgm1[l1], gp2, wgv2, wg);
         continue;
       }
 
-      std::cerr << "   new vertex doesn't exist. add node, add edge, add todo! " << std::endl;
+      DEBUG << "   new vertex doesn't exist. add node, add edge, add todo! " << std::endl;
 
       wgv2 = WG::addVertex(newV, wg);
       WG::addEdge(wgv1, lgm1[l1], gp2, wgv2, wg);
@@ -157,8 +158,8 @@ WG_t WG::create(const DG_t &g1, const DG_t &g2, labelGroupingMap &lgm1,
 
 
 
-    std::cerr << "  checking rule 2:" << std::endl;
-    std::cerr << "    g2 moves:" << std::endl;
+    DEBUG << "  checking rule 2:" << std::endl;
+    DEBUG << "    g2 moves:" << std::endl;
 
 
     for (const WG::eDesc &e2 : oe2) {
@@ -169,8 +170,8 @@ WG_t WG::create(const DG_t &g1, const DG_t &g2, labelGroupingMap &lgm1,
           if (msNew.empty())
             continue;
 
-      std::cerr << "    found new match set" << std::endl;
-      std::cerr << "    " << l2 << ", " << Match::setToString(msNew) << std::endl;
+      DEBUG << "    found new match set" << std::endl;
+      DEBUG << "    " << l2 << ", " << Match::setToString(msNew) << std::endl;
 
       dst1 = gv1;
       dst2 = boost::target(e2, g2);
@@ -178,23 +179,23 @@ WG_t WG::create(const DG_t &g1, const DG_t &g2, labelGroupingMap &lgm1,
       alignmentGrouping gp1;
 
       WG::Vertex newV = WG::createVertex(g1[dst1].name, g2[dst2].name, msNew);
-      std::cerr << "    new Vertex: " << newV.name << std::endl << std::endl;
+      DEBUG << "    new Vertex: " << newV.name << std::endl << std::endl;
 
       if (WG::vertexEqual(currentV, newV)) {
-        std::cerr << "   i,m the new vertex, only adding edge to myself " << std::endl;
+        DEBUG << "   i,m the new vertex, only adding edge to myself " << std::endl;
         wgv2 = wgv1;
         WG::addEdge(wgv1, gp1, lgm2[l2], wgv2, wg);
         continue;
       }
 
       if (WG::hasVertex(newV, wg)) {
-        std::cerr << "   new vertex already exists. adding edge, not todo " << std::endl;
+        DEBUG << "   new vertex already exists. adding edge, not todo " << std::endl;
         wgv2 = WG::getVertex(newV, wg);
         WG::addEdge(wgv1, gp1, lgm2[l2], wgv2, wg);
         continue;
       }
 
-      std::cerr << "   new vertex doesn't exist. add node, add edge, add todo! " << std::endl;
+      DEBUG << "   new vertex doesn't exist. add node, add edge, add todo! " << std::endl;
 
       wgv2 = WG::addVertex(newV, wg);
       WG::addEdge(wgv1, gp1, lgm2[l2], wgv2, wg);
@@ -207,10 +208,10 @@ WG_t WG::create(const DG_t &g1, const DG_t &g2, labelGroupingMap &lgm1,
     Util::printLineDebug();
 
 
-    std::cerr << "Todo:" << std::endl;
+    DEBUG << "Todo:" << std::endl;
 
     for (const WG::vDesc &v : wgTodo)
-      std::cerr << "  " << wg[v].name << std::endl;
+      DEBUG << "  " << wg[v].name << std::endl;
 
     Util::printLineDebug();
     Util::printLineDebug();
@@ -561,8 +562,8 @@ void WG::printOutEdgeDebug(const WG_t &wg, const WG::eDesc &e)
 
   label << "}";
 
-  std::cerr << "  \"" << wg[src].name << "\" ->  \"" << wg[dst].name << "\"";
-  std::cerr << " [label=\"" << label.str() << "\", gp1=\"" << gp1 << "\", gp2=\"" << gp2 <<"\"]" << std::endl;
+  DEBUG << "  \"" << wg[src].name << "\" ->  \"" << wg[dst].name << "\"";
+  DEBUG << " [label=\"" << label.str() << "\", gp1=\"" << gp1 << "\", gp2=\"" << gp2 <<"\"]" << std::endl;
 
   return;
 }
@@ -584,7 +585,7 @@ void WG::printOutEdgesDebug(const WG_t &wg, const WG::vDesc &v)
 
 void WG::printDebug(const WG_t &wg)
 {
-  std::cerr << "digraph {" << std::endl;
+  DEBUG << "digraph {" << std::endl;
 
   Range<WG::vIter> vertices = Util::makeRange(boost::vertices(wg));
 
@@ -599,7 +600,7 @@ void WG::printDebug(const WG_t &wg)
     printOutEdgesDebug(wg, v);
 
 
-  std::cerr << "}" << std::endl;
+  DEBUG << "}" << std::endl;
 
   return;
 }

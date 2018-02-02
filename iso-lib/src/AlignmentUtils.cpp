@@ -120,11 +120,6 @@ alignmentGrouping Alm::getGrouping(const label &l, const alignmentHalf &alh)
   return res;
 }
 
-int Alm::getPermissiveness(const alignment &alm)
-{
-  return 0;
-}
-
 label Alm::getLabelFromGrouping(const alignmentGrouping &gp)
 {
   return gp[0][0];

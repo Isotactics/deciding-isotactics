@@ -31,28 +31,45 @@ DG_t DG::determinize(const Graph_t &g, const edgeLabelSet &els)
     std::vector<Graph::eDesc> outEdges = DG::getOutEdges(dg, curr, g);
 
     for (const alignmentGrouping &gp : els) {
-      label l = Alm::getLabelFromGrouping(gp);
+      // skip empty groupings as they will be processed via epsilon closure
+      if (gp.empty())
+          continue;
+          
+      // we get this label from DG::hasEdgeForGrouping(_, _, _, l)
+      label l /*= Alm::getLabelFromGrouping(gp)*/;
 
-      if (!DG::hasEdgeForGrouping(g, outEdges, gp))
+      if (!DG::hasEdgeForGrouping(g, outEdges, gp, l))
         continue;
 
       std::vector<Graph::eDesc> edges = DG::getEdgesForGrouping(g, outEdges, gp);
-      std::vector<Graph::vDesc> dsts = Graph::getDestinations(g, edges);
+      
+      // DONE: could use unique set instead of vector to prevent nodes like "{4,4}" and
+      //       possibly prevent errors if there is another node "{4}".
+      //       Since DG::hasVertex tests for name "{4,4}" != "{4}" has potential for errors. 
+      std::set<Graph::vDesc> dsts = Graph::getDestinationsWithEpsilonClosure(g, edges);
 
       DG::Vertex nv = DG::createVertex(dsts, g);
       DG::updateVertexName(nv, g);
 
-      if (DG::hasVertex(dg, nv)) {
+      if (DG::hasVertex(dg, nv))
+      {
+        // vertex already exists. only add a new edge with the current label l.
+        
         DG::vDesc existingDst = DG::getVertexByName(dg, nv.name);
         DG::addEdge(dg, curr, l, existingDst);
-
-        continue;
+        
+        // no need to process this node again so do not put it in our todo queue.
       }
+      else
+      {
+        // vertex didn't exist. insert it into the deterministic graph and add the edge.
+        
+        DG::vDesc nvd = DG::addVertex(dg, nv);
+        DG::addEdge(dg, curr, l, nvd);
 
-      DG::vDesc nvd = DG::addVertex(dg, nv);
-      DG::addEdge(dg, curr, l, nvd);
-
-      dgTodo.push_back(nvd);
+        // also put it in our todo queue.
+        dgTodo.push_back(nvd);
+      }
     }
   }
 
@@ -69,14 +86,27 @@ DG::Vertex DG::createVertex()
 DG::Vertex DG::createVertex(const std::vector<Graph::vDesc> &vertices, const Graph_t &g)
 {
   DG::Vertex nv;
-
+  
   for (const Graph::vDesc &v : vertices) {
     DG::addVertexToSet(v, nv);
-
+    
     if (Graph::isFinalState(g, v))
       nv.role = "end";
   }
-
+  
+  return nv;
+}
+DG::Vertex DG::createVertex(const std::set<Graph::vDesc> &vertices, const Graph_t &g)
+{
+  DG::Vertex nv;
+  
+  for (const Graph::vDesc &v : vertices) {
+    DG::addVertexToSet(v, nv);
+    
+    if (Graph::isFinalState(g, v))
+      nv.role = "end";
+  }
+  
   return nv;
 }
 
@@ -233,11 +263,23 @@ Range<DG::oeIter> DG::getOutEdges(const DG_t &g, const DG::vDesc &v)
   return Util::makeRange(boost::out_edges(v, g));
 }
 
-bool DG::hasEdgeForGrouping(const Graph_t &g, const std::vector<Graph::eDesc> &edges, const alignmentGrouping &gp)
+bool DG::hasEdgeForGrouping(const Graph_t &g, const std::vector<Graph::eDesc> &edges, const alignmentGrouping &gp, label& l)
 {
   for (const Graph::eDesc &e : edges) {
     if (g[e].gp == gp)
+    {
+      // we found the edge in g1/g2 that belongs to this alignment grouping.
+      // the edge in the corresponding dg1/dg2 will also only have one label
+      // as its label. we need to tell dg1/dg2 which of the labels in the
+      // alignment grouping originally created the grouping and use this as the
+      // edge's label.
+      // for example, consider from the paper example state II and edge x.
+      // this egde will have the alignment grouping {{s,w,x}}. in the
+      // determinized graph this edge will then also get label x.
+      l = g[e].label;
+
       return true;
+    }
   }
 
   return false;
@@ -285,33 +327,37 @@ DG::vDesc DG::getDst(const DG::vDesc &v, const std::string &l, const DG_t &g)
 
 void DG::print(const DG_t &g)
 {
-  std::cout << "digraph {" << std::endl;
+  return DG::print(g, std::cout);
+}
+void DG::print(const DG_t &g, std::ostream& target)
+{
+  target << "digraph {" << std::endl;
 
   Range<DG::vIter> vertices = Util::makeRange(boost::vertices(g));
 
   for (const DG::vDesc &v : vertices) {
     if (g[v].role == "start") {
-      std::cout << " \"" << g[v].name << "\" [role=\"start\"]" << std::endl;
+      target << " \"" << g[v].name << "\" [role=\"start\"]" << std::endl;
       continue;
     }
 
     if (g[v].role == "end") {
-      std::cout << " \"" << g[v].name << "\" [role=\"end\"]" << std::endl;
+      target << " \"" << g[v].name << "\" [role=\"end\"]" << std::endl;
       continue;
     }
 
     if (g[v].role == "empty") {
-      std::cout << " \"" << g[v].name << "\" [role=\"empty\"]" << std::endl;
+      target << " \"" << g[v].name << "\" [role=\"empty\"]" << std::endl;
       continue;
     }
   }
 
-  Util::printLine();
+  target << std::endl;
 
   for (const DG::vDesc &v : vertices)
-    DG::printOutEdges(g, v);
+    DG::printOutEdges(g, v, target);
 
-  std::cout << "}\n\n" << std::endl;
+  target << "}\n\n" << std::endl;
 
   return;
 }
@@ -338,22 +384,34 @@ void DG::printEdges(const DG_t &g)
 
 void DG::printOutEdge(const DG_t &g, const eDesc &e)
 {
+  return DG::printOutEdge(g, e, std::cout);
+}
+void DG::printOutEdge(const DG_t &g, const eDesc &e, std::ostream& target)
+{
   const DG::vDesc src = boost::source(e, g);
   const DG::vDesc dst = boost::target(e, g);
 
-  std::cout << "  " << g[src].name << " -> " << g[dst].name;
-  std::cout << " [label=\"" << g[e].label << "\"]" << std::endl;
+  target << "  \"" << g[src].name << "\" -> \"" << g[dst].name << "\"";
+
+  dgEdgeProps edge = g[e];
+
+  target << " [label=\"" << g[e].label << "\"]" << std::endl;
+  // target << " [label=\"" << Alm::groupingToStr(g[e].gp) << "\"]" << std::endl;
 }
 
-void DG::printOutEdges(const DG_t &g, const DG::vDesc &vd) {
-
+void DG::printOutEdges(const DG_t &g, const DG::vDesc &vd)
+{
+  return DG::printOutEdges(g, vd, std::cout);
+}
+void DG::printOutEdges(const DG_t &g, const DG::vDesc &vd, std::ostream& target)
+{
   const Range<DG::oeIter> outEdges = Util::makeRange(boost::out_edges(vd, g));
 
   if (outEdges.empty())
     return;
 
   for (const DG::eDesc &e : outEdges)
-    DG::printOutEdge(g, e);
+    DG::printOutEdge(g, e, target);
 
   return;
 }

@@ -3,6 +3,8 @@
 
 #include "CompareUtils.hpp"
 
+#include "Logging.hpp"
+
 bool Cmp::isExitCondition(const Cmp::VertexPair &v, const DG_t &g, const DWG_t &dwg)
 {
   DG::vDesc gv = v.gv;
@@ -52,14 +54,15 @@ bool Cmp::isEqual(const DG_t &g, const DWG_t &dwg, const labelGroupingMap &lgm) 
     DG::vDesc gv = curr.pair.gv;
     DWG::vDesc dwgv = curr.pair.dwgv;
 
-    std::cerr << "working on: " << Cmp::vpToString(curr.pair, g, dwg) << std::endl;
+    DEBUG << "working on: " << Cmp::vpToString(curr.pair, g, dwg) << std::endl;
 
     Range<DG::oeIter> oes = DG::getOutEdges(g, gv);
 
     for (const DG::eDesc &e : oes) {
 
       label l = g[e].label;
-      std::cerr << "  checking label " << l << std::endl;
+
+      DEBUG << "  checking label " << l << std::endl;
 
       DG::vDesc gDst = DG::getDst(gv, l, g);
       DWG::vDesc dwgDst = DWG::getDst(dwgv, lgm.find(l)->second, dwg);
@@ -67,7 +70,7 @@ bool Cmp::isEqual(const DG_t &g, const DWG_t &dwg, const labelGroupingMap &lgm) 
       Cmp::Vertex dst(gDst, dwgDst);
       Cmp::inheritPath(dst, curr);
 
-      std::cerr << "  destination: " << Cmp::vpToString(dst.pair, g, dwg) << std::endl;
+      DEBUG << "  destination: " << Cmp::vpToString(dst.pair, g, dwg) << std::endl;
 
       if (isExitCondition(dst.pair, g, dwg)) {
         std::cout << "\nexit condition at: " << vertexToString(dst, g, dwg) << std::endl;
@@ -75,24 +78,28 @@ bool Cmp::isEqual(const DG_t &g, const DWG_t &dwg, const labelGroupingMap &lgm) 
       }
 
       if (alreadyVisited(dst, visited)) {
-        std::cerr << "  destination already visited. continue.\n\n";
+        DEBUG << "  destination already visited. continue.\n\n";
+
         continue;
       }
 
-      std::cerr << "  adding new destination\n\n";
+      DEBUG << "  adding new destination\n\n";
+
       cmpTodo.push_back(dst);
     }
 
-    std::cerr << "ToDo:\n";
+    IF_DEBUG(
+      DEBUG << "ToDo:\n";
 
-    for (const Cmp::Vertex &v : cmpTodo)
-      std::cerr << Cmp::vpToString(v.pair, g, dwg) << std::endl;
+      for (const Cmp::Vertex &v : cmpTodo)
+        DEBUG << Cmp::vpToString(v.pair, g, dwg) << std::endl;
 
-    std::cerr << "\nVisited:\n";
-    for (const Cmp::Vertex &v : visited)
-      std::cerr << Cmp::vpToString(v.pair, g, dwg) << std::endl;
+      DEBUG << "\nVisited:\n";
+      for (const Cmp::Vertex &v : visited)
+        DEBUG << Cmp::vpToString(v.pair, g, dwg) << std::endl;
 
-    std::cerr << "\n\n\n\n\n";
+      DEBUG << "\n\n\n\n\n";
+    )
   }
 
   return true;

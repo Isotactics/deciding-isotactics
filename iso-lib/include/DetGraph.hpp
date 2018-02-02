@@ -55,6 +55,7 @@ namespace DG {
 
   DG::Vertex createVertex();
   DG::Vertex createVertex(const std::vector<Graph::vDesc> &vertices, const Graph_t &g);
+  DG::Vertex createVertex(const std::set<Graph::vDesc> &vertices, const Graph_t &g);
 
   DG::Vertex createStart();
   DG::vDesc getStart(const DG_t &dg);
@@ -77,7 +78,7 @@ namespace DG {
   std::vector<DG::eDesc> getOutEdges(const DG_t &dg, const DG::vDesc &v, const Graph_t &g);
   Range<DG::oeIter> getOutEdges(const DG_t &g, const DG::vDesc &v);
 
-  bool hasEdgeForGrouping(const Graph_t &g, const std::vector<Graph::eDesc> &edges, const alignmentGrouping &gp);
+  bool hasEdgeForGrouping(const Graph_t &g, const std::vector<Graph::eDesc> &edges, const alignmentGrouping &gp, label& l);
   std::vector<Graph::eDesc> getEdgesForGrouping(const Graph_t &g, const std::vector<Graph::eDesc> &edges, const alignmentGrouping &gp);
 
   DG::vDesc getDst(const DG::vDesc &v, const std::string &l, const DG_t &g);
@@ -86,12 +87,15 @@ namespace DG {
 
 
   void print(const DG_t &g);
+  void print(const DG_t &g, std::ostream& target);
 
   void printVertices(const DG_t &g);
   void printEdges(const DG_t &g);
 
   void printOutEdge(const DG_t &g, const Graph::eDesc &e);
+  void printOutEdge(const DG_t &g, const Graph::eDesc &e, std::ostream& target);
   void printOutEdges(const DG_t &g, const Graph::vDesc &vd);
+  void printOutEdges(const DG_t &g, const Graph::vDesc &vd, std::ostream& target);
 }
 
 #endif // __DETGRAPHUTILS_HPP__

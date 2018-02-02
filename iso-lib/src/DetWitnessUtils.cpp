@@ -4,6 +4,8 @@
 #include "DetWitnessUtils.hpp"
 #include "WitnessUtils.hpp"
 
+#include "Logging.hpp"
+
 DWG_t DWG::createLhs(const WG_t &wg, const edgeLabelSet &els)
 {
   DWG_t dwg;
@@ -26,10 +28,11 @@ DWG_t DWG::createLhs(const WG_t &wg, const edgeLabelSet &els)
     DWG::vDesc dwgv1 = DWG::getVertex(currV, dwg);
     dwgTodo.pop_front();
 
-    std::cerr << "checking node: " << dwg[dwgv1].name << std::endl;
+    DEBUG << "checking node: " << dwg[dwgv1].name << std::endl;
 
     std::vector<WG::eDesc> oedges = DWG::getOutEdges(dwg, wg, dwgv1);
-    std::cerr << "  out edges:\n";
+
+    DEBUG << "  out edges:\n";
 
     for (const WG::eDesc &e : oedges)
       WG::printOutEdgeDebug(wg, e);
@@ -39,31 +42,35 @@ DWG_t DWG::createLhs(const WG_t &wg, const edgeLabelSet &els)
 
     for (const alignmentGrouping &gp : els) {
 
-      std::cerr << "  grouping " << Alm::groupingToStr(gp) << ":\n";
+      DEBUG << "  grouping " << Alm::groupingToStr(gp) << ":\n";
 
       if (!WG::hasEdgeLhs(oedges, gp, wg)) {
-        std::cerr << "    no edge for label, adding edge to empty state\n\n\n";
+        DEBUG << "    no edge for label, adding edge to empty state\n\n\n";
+
         DWG::addEdge(dwgv1, gp, dwgEmpty, dwg);
         continue;
       }
-      std::cerr << "    has edge for label\n";
+      DEBUG << "    has edge for label\n";
 
       std::vector<WG::eDesc> edges = WG::getEdgesWithLabelLhs(oedges, gp, wg);
       std::vector<WG::vDesc> dsts  = WG::getDestinations(edges, wg);
 
-      std::cerr << "    label: " << Alm::groupingToStr(gp) << "\n";
-      std::cerr << "    edges:\n";
+      DEBUG << "    label: " << Alm::groupingToStr(gp) << "\n";
+      DEBUG << "    edges:\n";
       for (const WG::eDesc &e : edges)
         WG::printOutEdgeDebug(wg, e);
 
-      std::cerr << "    destinations:\n";
-      for (const WG::vDesc &v : dsts)
-        std::cerr << wg[v].name << "\n";
+      IF_DEBUG(
+        DEBUG << "    destinations:\n";
 
-      std::cerr << "    dsts are sub: " << DWG::destinationsAreSubset(dsts, DWG::getVertex(dwgv1, dwg)) << "\n";
+        for (const WG::vDesc &v : dsts)
+          DEBUG << wg[v].name << "\n";
+
+        DEBUG << "    dsts are sub: " << DWG::destinationsAreSubset(dsts, DWG::getVertex(dwgv1, dwg)) << "\n";
+      )
 
       if (DWG::destinationsAreSubset(dsts, DWG::getVertex(dwgv1, dwg))) {
-        std::cerr << "    destinations are subset of myself, adding self-edge\n\n\n";
+        DEBUG << "    destinations are subset of myself, adding self-edge\n\n\n";
         DWG::addEdge(dwgv1, gp, dwgv1, dwg);
         continue;
       }
@@ -76,16 +83,16 @@ DWG_t DWG::createLhs(const WG_t &wg, const edgeLabelSet &els)
       DWG::findAllNodesLhs(nv, wg);
       DWG::setFinalState(nv, wg);
 
-      std::cerr << "    current vertex: " << nv.name << " role: " << nv.role << "\n";
+      DEBUG << "    current vertex: " << nv.name << " role: " << nv.role << "\n";
 
       if (DWG::hasVertex(nv, dwg)) {
-        std::cerr << "    vertex already exists, only adding edge\n\n\n";
+        DEBUG << "    vertex already exists, only adding edge\n\n\n";
         DWG::vDesc dwgv2 = DWG::getVertex(nv, dwg);
         DWG::addEdge(dwgv1, gp, dwgv2, dwg);
         continue;
       }
 
-      std::cerr << "    vertex is new, adding vertex, edge and todo\n\n\n";
+      DEBUG << "    vertex is new, adding vertex, edge and todo\n\n\n";
       DWG::vDesc dwgv2 = DWG::addVertex(dwg, nv, wg);
       DWG::addEdge(dwgv1, gp, dwgv2, dwg);
 
@@ -94,10 +101,10 @@ DWG_t DWG::createLhs(const WG_t &wg, const edgeLabelSet &els)
 
     } // label loop
 
-    std::cerr << "\nTodo:\n";
+    DEBUG << "\nTodo:\n";
 
     for (const DWG::Vertex &v : dwgTodo)
-      std::cerr << v.name << std::endl;
+      DEBUG << v.name << std::endl;
 
     Util::printLineDebug();
     Util::printLineDebug();
@@ -130,10 +137,10 @@ DWG_t DWG::createRhs(const WG_t &wg, const edgeLabelSet &els)
     DWG::vDesc dwgv1 = DWG::getVertex(currV, dwg);
     dwgTodo.pop_front();
 
-    std::cerr << "checking node: " << dwg[dwgv1].name << std::endl;
+    DEBUG << "checking node: " << dwg[dwgv1].name << std::endl;
 
     std::vector<WG::eDesc> oedges = DWG::getOutEdges(dwg, wg, dwgv1);
-    std::cerr << "  out edges:\n";
+    DEBUG << "  out edges:\n";
 
     for (const WG::eDesc &e : oedges)
       WG::printOutEdgeDebug(wg, e);
@@ -143,31 +150,32 @@ DWG_t DWG::createRhs(const WG_t &wg, const edgeLabelSet &els)
 
     for (const alignmentGrouping &gp : els) {
 
-      std::cerr << "  grouping " << Alm::groupingToStr(gp) << ":\n";
+      DEBUG << "  grouping " << Alm::groupingToStr(gp) << ":\n";
 
       if (!WG::hasEdgeRhs(oedges, gp, wg)) {
-        std::cerr << "    no edge for label, adding edge to empty state\n\n\n";
+        DEBUG << "    no edge for label, adding edge to empty state\n\n\n";
         DWG::addEdge(dwgv1, gp, dwgEmpty, dwg);
         continue;
       }
-      std::cerr << "    has edge for label\n";
+      DEBUG << "    has edge for label\n";
 
       std::vector<WG::eDesc> edges = WG::getEdgesWithLabelRhs(oedges, gp, wg);
       std::vector<WG::vDesc> dsts  = WG::getDestinations(edges, wg);
 
-      std::cerr << "    label: " << Alm::groupingToStr(gp) << "\n";
-      std::cerr << "    edges:\n";
+      DEBUG << "    label: " << Alm::groupingToStr(gp) << "\n";
+      DEBUG << "    edges:\n";
       for (const WG::eDesc &e : edges)
         WG::printOutEdgeDebug(wg, e);
 
-      std::cerr << "    destinations:\n";
-      for (const WG::vDesc &v : dsts)
-        std::cerr << wg[v].name << "\n";
-
-      std::cerr << "    dsts are sub: " << DWG::destinationsAreSubset(dsts, DWG::getVertex(dwgv1, dwg)) << "\n";
+      IF_DEBUG(
+        DEBUG << "    destinations:\n";
+        for (const WG::vDesc &v : dsts)
+          DEBUG << wg[v].name << "\n";
+        DEBUG << "    dsts are sub: " << DWG::destinationsAreSubset(dsts, DWG::getVertex(dwgv1, dwg)) << "\n";
+      )
 
       if (DWG::destinationsAreSubset(dsts, DWG::getVertex(dwgv1, dwg))) {
-        std::cerr << "    destinations are subset of myself, adding self-edge\n\n\n";
+        DEBUG << "    destinations are subset of myself, adding self-edge\n\n\n";
         DWG::addEdge(dwgv1, gp, dwgv1, dwg);
         continue;
       }
@@ -180,16 +188,16 @@ DWG_t DWG::createRhs(const WG_t &wg, const edgeLabelSet &els)
       DWG::findAllNodesRhs(nv, wg);
       DWG::setFinalState(nv, wg);
 
-      std::cerr << "    current vertex: " << nv.name << " role: " << nv.role << "\n";
+      DEBUG << "    current vertex: " << nv.name << " role: " << nv.role << "\n";
 
       if (DWG::hasVertex(nv, dwg)) {
-        std::cerr << "    vertex already exists, only adding edge\n\n\n";
+        DEBUG << "    vertex already exists, only adding edge\n\n\n";
         DWG::vDesc dwgv2 = DWG::getVertex(nv, dwg);
         DWG::addEdge(dwgv1, gp, dwgv2, dwg);
         continue;
       }
 
-      std::cerr << "    vertex is new, adding vertex, edge and todo\n\n\n";
+      DEBUG << "    vertex is new, adding vertex, edge and todo\n\n\n";
       DWG::vDesc dwgv2 = DWG::addVertex(dwg, nv, wg);
       DWG::addEdge(dwgv1, gp, dwgv2, dwg);
 
@@ -200,10 +208,11 @@ DWG_t DWG::createRhs(const WG_t &wg, const edgeLabelSet &els)
 
     //DWG::print(dwg, wg);
 
-    std::cerr << "\nTodo:\n";
-
-    for (const DWG::Vertex &v : dwgTodo)
-      std::cerr << v.name << std::endl;
+    IF_DEBUG(
+      DEBUG << "\nTodo:\n";
+      for (const DWG::Vertex &v : dwgTodo)
+        DEBUG << v.name << std::endl;
+    )
 
     Util::printLineDebug();
     Util::printLineDebug();
@@ -475,8 +484,20 @@ bool DWG::destinationsAreSubset(const std::vector<WG::vDesc> dsts, const DWG::Ve
 
 void DWG::findAllNodesLhs(DWG::Vertex &v, const WG_t &wg)
 {
-  for (const WG::vDesc &start : v.vs) {
-    std::cerr << "[findAllNodes] start at " << wg[start].name << "\n";
+  // fill a queue with the vectors in v.vs and then iterate over them
+  // we need the queue because inside the loop we may append new vectors
+  // to v.vs, thereby invalidating any iterator.
+  std::deque<WG::vDesc> vectors;
+  for (const auto &start : v.vs) {
+    vectors.push_back(start);
+  }
+
+  while(!vectors.empty())
+  {
+    auto start = vectors.front();
+    vectors.pop_front();
+
+    DEBUG << "[findAllNodes] start at " << wg[start].name << "\n";
 
     std::deque<WG::vDesc> todo;
     std::vector<WG::vDesc> visited;
@@ -489,44 +510,44 @@ void DWG::findAllNodesLhs(DWG::Vertex &v, const WG_t &wg)
       todo.pop_front();
       visited.push_back(curr);
 
-      std::cerr << "  [findAllNodes] checking node " << wg[curr].name << " (" << curr << ")\n";
+      DEBUG << "  [findAllNodes] checking node " << wg[curr].name << " (" << curr << ")\n";
 
       Range<WG::oeIter> oedges = Util::makeRange(boost::out_edges(curr, wg));
 
       if (oedges.empty()) {
-        std::cerr << "  [findAllNodes] no out edges, done.\n";
+        DEBUG << "  [findAllNodes] no out edges, done.\n";
         continue;
       }
 
-      std::cerr << "  [findAllNodes] out edges:\n";
+      DEBUG << "  [findAllNodes] out edges:\n";
       for (const WG::eDesc &e : oedges)
         WG::printOutEdgeDebug(wg, e);
 
       if (!WG::hasEmptyTransitionLhs(oedges, wg)) {
-        std::cerr << "  [findAllNodes] no empty edge\n";
+        DEBUG << "  [findAllNodes] no empty edge\n";
         continue;
       }
 
       std::vector<WG::eDesc> empties = WG::getEmptyEdgesLhs(oedges, wg);
-      std::cerr << "  [findAllNodes] empty edges:\n";
+      DEBUG << "  [findAllNodes] empty edges:\n";
       for (const WG::eDesc &e : empties)
         WG::printOutEdgeDebug(wg, e);
 
       for (const WG::eDesc &e : empties) {
         WG::vDesc nv = boost::target(e, wg);
-        std::cerr << "    [findAllNodes] checking dst " << wg[nv].name << "\n";
+        DEBUG << "    [findAllNodes] checking dst " << wg[nv].name << "\n";
 
         if (DWG::alreadyVisited(visited, nv)) {
-          std::cerr << "    [findAllNodes] already visited\n";
+          DEBUG << "    [findAllNodes] already visited\n";
           continue;
         }
 
         if (DWG::vertexHasVertex(v, nv)) {
-          std::cerr << "    [findAllNodes] already contained\n";
+          DEBUG << "    [findAllNodes] already contained\n";
           continue;
         }
 
-        std::cerr << "    [findAllNodes] not visited, not contained -> adding node " << wg[nv].name << "\n";
+        DEBUG << "    [findAllNodes] not visited, not contained -> adding node " << wg[nv].name << "\n";
 
         DWG::addVertexToSet(v, nv, wg);
         todo.push_back(nv);
@@ -534,15 +555,27 @@ void DWG::findAllNodesLhs(DWG::Vertex &v, const WG_t &wg)
     }
   }
 
-  std::cerr << "[findAllNodes] done.\n\n";
+  DEBUG << "[findAllNodes] done.\n\n";
 
   return;
 }
 
 void DWG::findAllNodesRhs(DWG::Vertex &v, const WG_t &wg)
 {
-  for (const WG::vDesc &start : v.vs) {
-    std::cerr << "[findAllNodes] start at " << wg[start].name << "\n";
+  // fill a queue with the vectors in v.vs and then iterate over them
+  // we need the queue because inside the loop we may append new vectors
+  // to v.vs, thereby invalidating any iterator.
+  std::deque<WG::vDesc> vectors;
+  for (const auto &start : v.vs) {
+    vectors.push_back(start);
+  }
+
+  while(!vectors.empty())
+  {
+    auto start = vectors.front();
+    vectors.pop_front();
+
+    DEBUG << "[findAllNodes] start at " << wg[start].name << "\n";
 
     std::deque<WG::vDesc> todo;
     std::vector<WG::vDesc> visited;
@@ -555,44 +588,46 @@ void DWG::findAllNodesRhs(DWG::Vertex &v, const WG_t &wg)
       todo.pop_front();
       visited.push_back(curr);
 
-      std::cerr << "  [findAllNodes] checking node " << wg[curr].name << " (" << curr << ")\n";
+      DEBUG << "  [findAllNodes] checking node " << wg[curr].name << " (" << curr << ")\n";
 
       Range<WG::oeIter> oedges = Util::makeRange(boost::out_edges(curr, wg));
 
       if (oedges.empty()) {
-        std::cerr << "  [findAllNodes] no out edges, done.\n";
+        DEBUG << "  [findAllNodes] no out edges, done.\n";
         continue;
       }
 
-      std::cerr << "  [findAllNodes] out edges:\n";
-      for (const WG::eDesc &e : oedges)
-        WG::printOutEdgeDebug(wg, e);
+      IF_DEBUG(
+        DEBUG << "  [findAllNodes] out edges:\n";
+        for (const WG::eDesc &e : oedges)
+          WG::printOutEdgeDebug(wg, e);
+      );
 
       if (!WG::hasEmptyTransitionRhs(oedges, wg)) {
-        std::cerr << "  [findAllNodes] no empty edge\n";
+        DEBUG << "  [findAllNodes] no empty edge\n";
         continue;
       }
 
       std::vector<WG::eDesc> empties = WG::getEmptyEdgesRhs(oedges, wg);
-      std::cerr << "  [findAllNodes] empty edges:\n";
+      DEBUG << "  [findAllNodes] empty edges:\n";
       for (const WG::eDesc &e : empties)
         WG::printOutEdgeDebug(wg, e);
 
       for (const WG::eDesc &e : empties) {
         WG::vDesc nv = boost::target(e, wg);
-        std::cerr << "    [findAllNodes] checking dst " << wg[nv].name << "\n";
+        DEBUG << "    [findAllNodes] checking dst " << wg[nv].name << "\n";
 
         if (DWG::alreadyVisited(visited, nv)) {
-          std::cerr << "    [findAllNodes] already visited\n";
+          DEBUG << "    [findAllNodes] already visited\n";
           continue;
         }
 
         if (DWG::vertexHasVertex(v, nv)) {
-          std::cerr << "    [findAllNodes] already contained\n";
+          DEBUG << "    [findAllNodes] already contained\n";
           continue;
         }
 
-        std::cerr << "    [findAllNodes] not visited, not contained -> adding node " << wg[nv].name << "\n";
+        DEBUG << "    [findAllNodes] not visited, not contained -> adding node " << wg[nv].name << "\n";
 
         DWG::addVertexToSet(v, nv, wg);
         todo.push_back(nv);
@@ -600,7 +635,7 @@ void DWG::findAllNodesRhs(DWG::Vertex &v, const WG_t &wg)
     }
   }
 
-  std::cerr << "[findAllNodes] done.\n\n";
+  DEBUG << "[findAllNodes] done.\n\n";
 
   return;
 }

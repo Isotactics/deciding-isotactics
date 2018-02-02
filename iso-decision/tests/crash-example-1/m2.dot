@@ -1,0 +1,9 @@
+digraph {
+  I [role="start"]
+  V [role="end"]
+
+  I   -> II   [label="s"];
+  II  -> III  [label="t"];
+  III -> IV   [label="u"];
+  IV  -> V    [label="v"];
+}

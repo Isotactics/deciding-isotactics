@@ -1,0 +1,9 @@
+bin
+build
+xcode
+
+**/error.txt
+**/m1.png
+**/m2.png
+**/m1.dot_m2.dot_alignment.json_witness_graph.dot
+**/m1.dot_m2.dot_alignment.json_witness_graph.png
